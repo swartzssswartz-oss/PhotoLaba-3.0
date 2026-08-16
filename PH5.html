@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>СВЕМА LAB :: MONO STUDIO PRO MOBILE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000000;
+      --surface: #0a0a0a;
+      --surface-elevated: #121212;
+      --border: #222222;
+      --border-strong: #444444;
+      --text: #ffffff;
+      --text-muted: #777777;
+      --accent: #ffffff;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Bar */
+    header {
+      height: 48px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .brand-mark {
+      width: 8px;
+      height: 8px;
+      background: var(--text);
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn {
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+      padding: 6px 12px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: #1a1a1a;
+    }
+
+    .btn-primary {
+      background: var(--text);
+      color: #000;
+      border-color: var(--text);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      background: #e0e0e0;
+    }
+
+    /* Mobile Navigation Tabs */
+    .mobile-nav-tabs {
+      display: none;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      flex-shrink: 0;
+      scrollbar-width: none;
+      z-index: 100;
+    }
+
+    .mobile-nav-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .m-tab {
+      flex: 1;
+      min-width: 85px;
+      padding: 10px 6px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-align: center;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+    }
+
+    .m-tab.active {
+      color: var(--text);
+      border-bottom-color: var(--text);
+      background: var(--surface-elevated);
+      font-weight: 700;
+    }
+
+    /* App Layout */
+    .app-layout {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .sidebar {
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-left {
+      width: 290px;
+      border-right: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .sidebar-right {
+      width: 390px;
+      border-left: 1px solid var(--border);
+      flex-shrink: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .panel-block {
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .panel-header {
+      padding: 10px 16px;
+      background: var(--surface);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .panel-body {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #050505;
+    }
+
+    /* Filter Group Tabs */
+    .filter-group {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+
+    .tab-item {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 8px 0;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+
+    .tab-item.active {
+      background: var(--text);
+      color: #000;
+      font-weight: 700;
+    }
+
+    /* Presets List */
+    .presets-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      flex: 1;
+    }
+
+    .preset-row {
+      background: var(--surface);
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      border-left: 3px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .preset-row:hover {
+      background: var(--surface-elevated);
+    }
+
+    .preset-row.active {
+      background: #181818;
+      border-left-color: var(--text);
+    }
+
+    .preset-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .preset-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .preset-tag {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      padding: 2px 4px;
+      border: 1px solid var(--border-strong);
+      text-transform: uppercase;
+    }
+
+    .preset-gost {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    /* Curve Box */
+    .curve-box {
+      width: 100%;
+      height: 110px;
+      background: #000;
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    svg#curveSvg {
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    /* Control Sliders & Selects */
+    .control-unit {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .control-head {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .control-val {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    select.select-input, input.select-input {
+      background: var(--surface-elevated);
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+      padding: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      outline: none;
+      width: 100%;
+    }
+
+    select.select-input {
+      cursor: pointer;
+    }
+
+    input[type="range"] {
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: var(--border-strong);
+      outline: none;
+      margin: 6px 0;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--text);
+      cursor: pointer;
+      border-radius: 50% !important;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      cursor: pointer;
+      color: var(--text);
+      padding: 4px 0;
+    }
+
+    /* Viewport Area */
+    .viewport-stage {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #000000;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .canvas-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    canvas#filmCanvas {
+      max-width: 100%;
+      max-height: 100%;
+      border: 1px solid var(--border);
+      box-shadow: 0 0 30px rgba(0,0,0,0.9);
+      object-fit: contain;
+    }
+
+    /* Centered Upload Overlay */
+    .upload-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.92);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      z-index: 50;
+      transition: opacity 0.2s ease;
+    }
+
+    .upload-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .status-bar {
+      height: 32px;
+      padding: 0 16px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      gap: 10px;
+    }
+
+    .status-bar div {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .desc-text {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* MOBILE RESPONSIVE MEDIA QUERY */
+    @media (max-width: 900px) {
+      .app-layout {
+        flex-direction: column;
+      }
+      .mobile-nav-tabs {
+        display: flex;
+      }
+      .viewport-stage {
+        height: 35vh;
+        min-height: 200px;
+        flex: none;
+      }
+      .sidebar-left, .sidebar-right {
+        width: 100%;
+        flex: 1;
+        border: none;
+        display: none;
+        position: relative;
+      }
+      .sidebar-left.mobile-active,
+      .sidebar-right.mobile-active {
+        display: flex;
+      }
+      .sidebar-right {
+        overflow-y: auto;
+      }
+      .mobile-section {
+        display: none;
+        flex-direction: column;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        flex: 1;
+        height: 100%;
+      }
+      .mobile-section.active-mobile-section {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <span>СВЕМА LAB :: БЕТА 0.1</span>
+    </div>
+    <div class="header-controls">
+      <button class="btn" id="btnHeaderUpload">Загрузить</button>
+      <button class="btn" id="btnReset" title="Сбросить">Сброс</button>
+      <button class="btn btn-primary" id="btnExport">Экспорт</button>
+    </div>
+  </header>
+
+  <!-- Mobile Navigation Tabs -->
+  <nav class="mobile-nav-tabs" id="mobileNavTabs">
+    <button class="m-tab active" data-tab="presets">Пресеты</button>
+    <button class="m-tab" data-tab="lab">Лаб & Тон</button>
+    <button class="m-tab" data-tab="fx">Оптика & Зерно</button>
+    <button class="m-tab" data-tab="frame">Рамка & Текст</button>
+  </nav>
+
+  <div class="app-layout">
+    
+    <!-- LEFT SIDEBAR: Presets & Filters -->
+    <aside class="sidebar sidebar-left mobile-active" id="section-presets">
+      <div class="filter-group">
+        <button class="tab-item active" data-filter="all">Все</button>
+        <button class="tab-item" data-filter="bw">Ч/Б</button>
+        <button class="tab-item" data-filter="color">Цвет</button>
+        <button class="tab-item" data-filter="aero">Спец</button>
+      </div>
+      <div class="presets-list" id="presetsList"></div>
+      <div class="panel-block" style="padding:12px; flex-shrink:0;">
+        <span class="panel-title" style="display:block; margin-bottom:4px;">Паспорт эмульсии</span>
+        <p class="desc-text" id="presetDesc">Выберите пленку...</p>
+      </div>
+    </aside>
+
+    <!-- CENTER: Canvas Stage & Centered Upload Overlay -->
+    <main class="viewport-stage">
+      <div class="canvas-container" id="canvasContainer">
+        <canvas id="filmCanvas"></canvas>
+        
+        <div id="uploadOverlay" class="upload-overlay">
+          <button class="btn btn-primary" id="btnCenterUpload" style="padding: 14px 24px; font-size: 12px; font-weight: 700; box-shadow: 0 4px 20px rgba(0,0,0,0.8);">
+            📁 ЗАГРУЗИТЬ ФОТО
+          </button>
+          <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Нажмите для выбора из галереи</span>
+        </div>
+        <input type="file" id="fileUploader" accept="image/*" style="display: none;">
+      </div>
+      
+      <div class="status-bar">
+        <div>ЧУВСТВИТЕЛЬНОСТЬ: <span id="hudGost" style="color:var(--text)">ГОСТ 64</span></div>
+        <div>РАЗРЕШЕНИЕ: <span id="hudRes" style="color:var(--text)">110 лин/мм</span></div>
+        <div>ПРОЯВИТЕЛЬ: <span id="hudDev" style="color:var(--text)">СТ-2</span></div>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR: Advanced Controls -->
+    <aside class="sidebar sidebar-right" id="section-right-controls">
+      
+      <!-- SECTION LAB & TONE (Mobile Tab 2) -->
+      <div class="mobile-section" data-m-group="lab">
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">1. Кривая плотности D-LogE</span></div>
+          <div class="panel-body">
+            <div class="curve-box">
+              <svg id="curveSvg" viewBox="0 0 200 120">
+                <path d="M0 30 H200 M0 60 H200 M0 90 H200 M50 0 V120 M100 0 V120 M150 0 V120" stroke="#1a1a1a" stroke-width="1"/>
+                <path id="curvePath" d="M 0 120 C 50 100, 150 20, 200 0" fill="none" stroke="#ffffff" stroke-width="2"/>
+                <rect id="p1" x="36" y="96" width="12" height="12" fill="#ffffff" style="cursor:pointer;"/>
+                <rect id="p2" x="156" y="16" width="12" height="12" fill="#ffffff" style="cursor:pointer;"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">2. Проявка и Химия</span></div>
+          <div class="panel-body">
+            <div class="control-unit">
+              <div class="control-head"><span>Проявитель</span></div>
+              <select id="paramDevType" class="select-input">
+                <option value="st2">СТ-2 / D-76 (Стандарт)</option>
+                <option value="rodinal">Родинал / R-09 (Острое зерно)</option>
+                <option value="hydro">Гидрохиноновый Д-19 (Графика)</option>
+                <option value="micro">Microdol-X (Мелкозернистый)</option>
+              </select>
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>PUSH / PULL</span><span class="control-val" id="valPush">NORMAL</span></div>
+              <input type="range" id="paramPush" min="-2" max="3" value="0" step="1">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Старение (Dye Fade)</span><span class="control-val" id="valDyeFade">0%</span></div>
+              <input type="range" id="paramDyeFade" min="0" max="100" value="0">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">3. Тональный баланс</span></div>
+          <div class="panel-body">
+            <div class="control-unit">
+              <div class="control-head"><span>Экспозиция (EV)</span><span class="control-val" id="valExp">0.0</span></div>
+              <input type="range" id="paramExp" min="-100" max="100" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Контраст</span><span class="control-val" id="valContrast">0</span></div>
+              <input type="range" id="paramContrast" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Света</span><span class="control-val" id="valHighlights">0</span></div>
+              <input type="range" id="paramHighlights" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Тени</span><span class="control-val" id="valShadows">0</span></div>
+              <input type="range" id="paramShadows" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Точка черного / Вуаль</span><span class="control-val" id="valFade">8%</span></div>
+              <input type="range" id="paramFade" min="0" max="50" value="8">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION FX & OPTICS (Mobile Tab 3) -->
+      <div class="mobile-section" data-m-group="fx">
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">4. Структура эмульсии</span></div>
+          <div class="panel-body">
+            <div class="control-unit">
+              <div class="control-head"><span>Интенсивность зерна</span><span class="control-val" id="valGrain">30%</span></div>
+              <input type="range" id="paramGrain" min="0" max="100" value="30">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Размер зерна</span><span class="control-val" id="valGrainSize">1.0x</span></div>
+              <input type="range" id="paramGrainSize" min="10" max="30" value="10">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">5. Светофильтры и Тонирование</span></div>
+          <div class="panel-body">
+            <div class="control-unit">
+              <div class="control-head"><span>Красный фильтр</span><span class="control-val" id="valFilterR">0</span></div>
+              <input type="range" id="paramFilterR" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Зеленый фильтр</span><span class="control-val" id="valFilterG">0</span></div>
+              <input type="range" id="paramFilterG" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Синий фильтр</span><span class="control-val" id="valFilterB">0</span></div>
+              <input type="range" id="paramFilterB" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Насыщенность</span><span class="control-val" id="valSat">100%</span></div>
+              <input type="range" id="paramSat" min="0" max="200" value="100">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Тонирование теней (Сепия)</span><span class="control-val" id="valSplitShadow">0</span></div>
+              <input type="range" id="paramSplitShadow" min="0" max="50" value="0">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">6. Бумага, Тонеры и Оптика</span></div>
+          <div class="panel-body">
+            <div class="control-unit">
+              <div class="control-head"><span>Тип фотобумаги</span></div>
+              <select id="paramPaper" class="select-input">
+                <option value="rc">RC (Пластиковая, холодная)</option>
+                <option value="baryta">Baryta (Баритовая, теплая)</option>
+              </select>
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Художественный тонер</span></div>
+              <select id="paramToner" class="select-input">
+                <option value="none">Без тонирования</option>
+                <option value="sepia">Сепия (Warm Brown)</option>
+                <option value="selenium">Селен (Cold Blue)</option>
+                <option value="cyanotype">Цианотип</option>
+              </select>
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Ореол (Halation)</span><span class="control-val" id="valHalation">15%</span></div>
+              <input type="range" id="paramHalation" min="0" max="100" value="15">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Виньетирование</span><span class="control-val" id="valVignette">20%</span></div>
+              <input type="range" id="paramVignette" min="0" max="100" value="20">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION FRAME & TEXT (Mobile Tab 4) -->
+      <div class="mobile-section" data-m-group="frame">
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">7. Рамка, Текст и Дефекты</span></div>
+          <div class="panel-body">
+            <div class="control-unit">
+              <div class="control-head"><span>Рамка 35mm с перфорацией</span></div>
+              <select id="paramFrame" class="select-input">
+                <option value="none">Без рамки</option>
+                <option value="svema">35mm СВЕМА ГОСТ</option>
+                <option value="orwo">35mm ORWO SAFETY FILM</option>
+                <option value="tasma">35mm ТАСМА КАЗАНЬ</option>
+              </select>
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Текст на рамке 35mm</span></div>
+              <input type="text" id="paramFrameText" class="select-input" value="СВЕМА 64 :: ГОСТ 64-85 :: 24A">
+            </div>
+            <div class="control-unit" style="margin-top: 4px;">
+              <label class="checkbox-label">
+                <input type="checkbox" id="paramImprint" style="width:16px; height:16px; accent-color:#fff;">
+                Впечатывать штамп (Lab Imprint)
+              </label>
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Текст штампа (пусто = авто)</span></div>
+              <input type="text" id="paramImprintText" class="select-input" placeholder="Автоматический штамп">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Засветка (Light Leak)</span><span class="control-val" id="valLeak">0%</span></div>
+              <input type="range" id="paramLeak" min="0" max="100" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Пыль и царапины</span><span class="control-val" id="valDust">0%</span></div>
+              <input type="range" id="paramDust" min="0" max="50" value="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <script>
+    const filmDatabase = [
+      { 
+        id: 'svema64', name: 'СВЕМА 64', type: 'bw', gost: 'ГОСТ 64', res: '110 лин/мм', dev: 'СТ-2', 
+        desc: 'Классический Ч/Б негатив Шосткинского завода. Высокий контраст и глубокие тени.',
+        baseFog: 0.04, gamma: 1.15, toeLength: 0.15, shoulderLength: 0.25,
+        grain: { size: 0.6, roughness: 0.5, shadowWeight: 0.6 },
+        halation: { intensity: 0.1, radius: 3 }, edgeEffect: 1.0
+      },
+      { 
+        id: 'svema125', name: 'СВЕМА 125', type: 'bw', gost: 'ГОСТ 125', res: '95 лин/мм', dev: 'Фенидон', 
+        desc: 'Универсальная репортажная Ч/Б пленка с пластичным тональным переходом.',
+        baseFog: 0.05, gamma: 1.22, toeLength: 0.12, shoulderLength: 0.22,
+        grain: { size: 1.0, roughness: 0.7, shadowWeight: 0.7 },
+        halation: { intensity: 0.15, radius: 4 }, edgeEffect: 1.1
+      },
+      { 
+        id: 'svema250', name: 'СВЕМА 250', type: 'bw', gost: 'ГОСТ 250', res: '75 лин/мм', dev: 'Агфа-108', 
+        desc: 'Высокочувствительная эмульсия с выразительным крупным зерном.',
+        baseFog: 0.08, gamma: 1.30, toeLength: 0.10, shoulderLength: 0.18,
+        grain: { size: 1.7, roughness: 0.9, shadowWeight: 0.85 },
+        halation: { intensity: 0.25, radius: 6 }, edgeEffect: 1.5
+      },
+      { 
+        id: 'tasma25', name: 'ТАСМА 25', type: 'bw', gost: 'ГОСТ 25', res: '160 лин/мм', dev: 'Мелкозернистый', 
+        desc: 'Сверхрезкая микроформатная Ч/Б пленка Казанского завода.',
+        baseFog: 0.02, gamma: 1.20, toeLength: 0.20, shoulderLength: 0.30,
+        grain: { size: 0.3, roughness: 0.3, shadowWeight: 0.4 },
+        halation: { intensity: 0.05, radius: 2 }, edgeEffect: 0.8
+      },
+      { 
+        id: 'tasma_fn64', name: 'ТАСМА ФН-64 / А-2', type: 'bw', gost: 'ГОСТ 64', res: '140 лин/мм', dev: 'Д-19', 
+        desc: 'Жесткая аэрофотопленка с повышенной панхроматической чувствительностью.',
+        baseFog: 0.07, gamma: 1.35, toeLength: 0.12, shoulderLength: 0.22,
+        grain: { size: 1.1, roughness: 0.85, shadowWeight: 0.75 },
+        halation: { intensity: 0.22, radius: 5 }, edgeEffect: 2.0
+      },
+      { 
+        id: 'tasma100', name: 'ТАСМА 100', type: 'bw', gost: 'ГОСТ 100', res: '105 лин/мм', dev: 'Универсальный', 
+        desc: 'Панхроматическая Ч/Б эмульсия с академической передачей серого.',
+        baseFog: 0.06, gamma: 1.18, toeLength: 0.14, shoulderLength: 0.24,
+        grain: { size: 0.9, roughness: 0.6, shadowWeight: 0.65 },
+        halation: { intensity: 0.12, radius: 3 }, edgeEffect: 1.0
+      },
+      { 
+        id: 'foto65', name: 'ФОТО-65', type: 'bw', gost: 'ГОСТ 65', res: '100 лин/мм', dev: 'СТ-2', 
+        desc: 'Массовая любительская Ч/Б фотопленка СССР 1970-80х годов.',
+        baseFog: 0.06, gamma: 1.10, toeLength: 0.18, shoulderLength: 0.28,
+        grain: { size: 1.3, roughness: 0.75, shadowWeight: 0.7 },
+        halation: { intensity: 0.18, radius: 4 }, edgeEffect: 1.0
+      },
+      { 
+        id: 'mikrat200', name: 'МИКРАТ-200', type: 'bw', gost: 'ГОСТ 5', res: '250 лин/мм', dev: 'Мелкозернистый', 
+        desc: 'Графическая бескомпромиссная пленка с близким к нулю зерном.',
+        baseFog: 0.02, gamma: 1.75, toeLength: 0.05, shoulderLength: 0.08,
+        grain: { size: 0.2, roughness: 0.1, shadowWeight: 0.2 },
+        halation: { intensity: 0.03, radius: 1 }, edgeEffect: 1.8
+      },
+      { 
+        id: 'fomapan400', name: 'FOMAPAN 400', type: 'bw', gost: 'ISO 400', res: '90 лин/мм', dev: 'R-09', 
+        desc: 'Чешская классика с бархатным контрастом и объемом в полутонах.',
+        baseFog: 0.08, gamma: 1.25, toeLength: 0.14, shoulderLength: 0.20,
+        grain: { size: 1.9, roughness: 0.8, shadowWeight: 0.8 },
+        halation: { intensity: 0.30, radius: 7 }, edgeEffect: 1.2
+      },
+      { 
+        id: 'retropan320', name: 'RETROPAN 320 Soft', type: 'bw', gost: 'ISO 320', res: '85 лин/мм', dev: 'Retro-Dev', 
+        desc: 'Специальная эмульсия с винтажным мягким рисунком и свечением.',
+        baseFog: 0.09, gamma: 0.95, toeLength: 0.25, shoulderLength: 0.35,
+        grain: { size: 1.5, roughness: 0.6, shadowWeight: 0.5 },
+        halation: { intensity: 0.40, radius: 10 }, edgeEffect: 0.9
+      },
+      { 
+        id: 'adox25', name: 'ADOX KB 25', type: 'bw', gost: 'ISO 25', res: '180 лин/мм', dev: 'Rodinal', 
+        desc: 'Немецкая микроструктурная пленка с глубоким серебряным слоем.',
+        baseFog: 0.03, gamma: 1.40, toeLength: 0.16, shoulderLength: 0.25,
+        grain: { size: 0.4, roughness: 0.4, shadowWeight: 0.5 },
+        halation: { intensity: 0.08, radius: 2 }, edgeEffect: 1.3
+      },
+      { 
+        id: 'sovcolor', name: 'СОВЦВЕТ ДС4', type: 'color', gost: 'ГОСТ 45', res: '85 лин/мм', dev: 'ЦВК-2', 
+        desc: 'Советский слайд: теплый золотистый свес, бирюзовые теневые тона.',
+        baseFog: 0.10, gamma: 1.08,
+        colorShiftMatrix: [1.02, 0.05, -0.08,  -0.08, 1.00, 0.04,  0.10, -0.05, 1.12],
+        grain: { size: 2.0, roughness: 0.85, shadowWeight: 0.8 },
+        halation: { intensity: 0.50, radius: 11 }
+      },
+      { 
+        id: 'ds5m', name: 'ДС-5М', type: 'color', gost: 'ГОСТ 32', res: '80 лин/мм', dev: 'ЦП-16', 
+        desc: 'Цветной негатив с пастельным оливково-оранжевым сдвигом.',
+        baseFog: 0.12, gamma: 1.12,
+        colorShiftMatrix: [1.05, 0.08, -0.12,  -0.05, 0.98, 0.07,  0.15, -0.10, 1.10],
+        grain: { size: 2.2, roughness: 0.9, shadowWeight: 0.85 },
+        halation: { intensity: 0.65, radius: 14 }
+      },
+      { 
+        id: 'co32d', name: 'ЦО-32Д', type: 'color', gost: 'ГОСТ 32', res: '90 лин/мм', dev: 'ЦВК-1', 
+        desc: 'Слайд дневного света с насыщенным глубоким синим спектром.',
+        baseFog: 0.03, gamma: 1.50,
+        colorShiftMatrix: [1.10, -0.02, 0.02,  0.02, 1.05, -0.04,  -0.05, 0.02, 1.25],
+        grain: { size: 0.7, roughness: 0.45, shadowWeight: 0.3 },
+        halation: { intensity: 0.12, radius: 3 }
+      },
+      { 
+        id: 'orwo18', name: 'ORWO UT18', type: 'color', gost: 'DIN 18', res: '120 лин/мм', dev: 'ORWO C-9165', 
+        desc: 'Легендарный немецкий цветной обратимый материал высочайшей чистоты.',
+        baseFog: 0.03, gamma: 1.45,
+        colorShiftMatrix: [1.15, -0.05, 0.00,  0.02, 1.02, -0.02,  -0.08, 0.05, 1.20],
+        grain: { size: 0.9, roughness: 0.5, shadowWeight: 0.3 },
+        halation: { intensity: 0.15, radius: 4 }
+      },
+      { 
+        id: 'orwout15', name: 'ORWO CHROM UT15', type: 'color', gost: 'DIN 15', res: '130 лин/мм', dev: 'C-9165', 
+        desc: 'Ранний слайд ГДР с пастельным бирюзово-зеленоватым налетом.',
+        baseFog: 0.04, gamma: 1.40,
+        colorShiftMatrix: [1.12, 0.02, -0.05,  -0.03, 1.05, 0.03,  0.05, -0.08, 1.15],
+        grain: { size: 0.8, roughness: 0.48, shadowWeight: 0.32 },
+        halation: { intensity: 0.14, radius: 4 }
+      },
+      { 
+        id: 'orwo19', name: 'ORWO NC19', type: 'color', gost: 'DIN 19', res: '110 лин/мм', dev: 'ORWO C-5168', 
+        desc: 'Цветной негатив ГДР с холодным киношным оттенком в тенях.',
+        baseFog: 0.09, gamma: 1.14,
+        colorShiftMatrix: [1.03, 0.04, -0.06,  -0.03, 1.04, 0.02,  0.06, -0.04, 1.08],
+        grain: { size: 1.5, roughness: 0.7, shadowWeight: 0.65 },
+        halation: { intensity: 0.35, radius: 8 }
+      },
+      { 
+        id: 'svemacv32', name: 'СВЕМА ЦВ-32', type: 'color', gost: 'ГОСТ 32', res: '85 лин/мм', dev: 'ЦП-2', 
+        desc: 'Первый массовый цветной негатив СССР. Мягкий розоватый скинтон.',
+        baseFog: 0.09, gamma: 1.10,
+        colorShiftMatrix: [1.00, 0.12, -0.05,  -0.03, 1.02, 0.02,  0.05, -0.02, 1.05],
+        grain: { size: 1.6, roughness: 0.7, shadowWeight: 0.65 },
+        halation: { intensity: 0.40, radius: 9 }
+      },
+      { 
+        id: 'svemaco50', name: 'СВЕМА ЦО-50Д', type: 'color', gost: 'ГОСТ 50', res: '95 лин/мм', dev: 'ЦВК-2', 
+        desc: 'Поздний советский слайд. Акцентированный красный и желтый спектры.',
+        baseFog: 0.04, gamma: 1.40,
+        colorShiftMatrix: [1.12, -0.05, 0.00,  0.00, 1.08, -0.02,  -0.02, 0.05, 1.18],
+        grain: { size: 0.8, roughness: 0.5, shadowWeight: 0.35 },
+        halation: { intensity: 0.15, radius: 4 }
+      },
+      { 
+        id: 'tasmacnb', name: 'ТАСМА ЦНБ-90', type: 'color', gost: 'ГОСТ 90', res: '90 лин/мм', dev: 'ЦП-16M', 
+        desc: 'Казанский цветной негатив с крупным структурным цветом.',
+        baseFog: 0.14, gamma: 1.18,
+        colorShiftMatrix: [1.08, -0.02, -0.15,  0.05, 0.95, 0.05,  0.20, -0.15, 1.00],
+        grain: { size: 2.5, roughness: 0.95, shadowWeight: 0.9 },
+        halation: { intensity: 0.80, radius: 16 }
+      },
+      { 
+        id: 'sovds2', name: 'СОВЦВЕТ ДС-2', type: 'color', gost: 'ГОСТ 32', res: '75 лин/мм', dev: 'ЦП-1', 
+        desc: 'Ранняя цветная пленка 60-х годов. Сепийно-изумрудный колорит.',
+        baseFog: 0.11, gamma: 1.02,
+        colorShiftMatrix: [0.95, 0.10, -0.05,  -0.02, 0.92, 0.08,  0.08, -0.05, 1.02],
+        grain: { size: 2.1, roughness: 0.8, shadowWeight: 0.75 },
+        halation: { intensity: 0.55, radius: 12 }
+      },
+      { 
+        id: 'kinapln3', name: 'КИНАП ЛН-3', type: 'color', gost: 'ГОСТ 64', res: '110 лин/мм', dev: 'ECN-2', 
+        desc: 'Профессиональная кинопленка для съемки художественных фильмов.',
+        baseFog: 0.08, gamma: 1.15,
+        colorShiftMatrix: [1.04, -0.04, 0.05,  -0.02, 1.02, 0.00,  -0.05, 0.08, 1.15],
+        grain: { size: 1.4, roughness: 0.65, shadowWeight: 0.6 },
+        halation: { intensity: 0.90, radius: 18 }
+      },
+      { 
+        id: 'tasmai810', name: 'ТАСМА И-810 (ИК)', type: 'aero', gost: 'ГОСТ 800', res: '60 лин/мм', dev: 'Спец-проявитель', 
+        desc: 'Инфракрасная Ч/Б эмульсия. Листва и зелень становятся белоснежными.',
+        baseFog: 0.05, gamma: 1.30, toeLength: 0.15, shoulderLength: 0.25,
+        grain: { size: 2.2, roughness: 0.85, shadowWeight: 0.8 },
+        halation: { intensity: 0.45, radius: 10 }, edgeEffect: 1.5
+      },
+      { 
+        id: 'aerochrome', name: 'AEROCHROME COLOR IR', type: 'aero', gost: 'ISO 400', res: '80 лин/мм', dev: 'E-6 / AERO', 
+        desc: 'Цветная спектрозональная ИК-пленка. Зелень окрашивается в ярко-пурпурный цвет.',
+        baseFog: 0.06, gamma: 1.25,
+        colorShiftMatrix: [0.4, 1.8, -0.2,  0.7, 0.0, 0.3,  0.1, 0.2, 0.8],
+        grain: { size: 1.8, roughness: 0.75, shadowWeight: 0.7 },
+        halation: { intensity: 0.60, radius: 12 }
+      }
+    ];
+
+    const defaultState = {
+      preset: 'svema64',
+      devType: 'st2',
+      pushPull: 0,
+      dyeFade: 0,
+      exp: 0,
+      contrast: 0,
+      highlights: 0,
+      shadows: 0,
+      fade: 8,
+      grain: 30,
+      grainSize: 10,
+      clarity: 0,
+      filterR: 0,
+      filterG: 0,
+      filterB: 0,
+      temp: 0,
+      sat: 100,
+      splitShadow: 0,
+      paper: 'rc',
+      toner: 'none',
+      halation: 15,
+      bloom: 0,
+      chroma: 0,
+      vignette: 20,
+      frame: 'none',
+      frameText: 'СВЕМА 64 :: ГОСТ 64-85 :: 24A',
+      imprint: false,
+      imprintText: '',
+      leak: 0,
+      spots: 0,
+      dust: 0,
+      p1: { x: 40, y: 100 },
+      p2: { x: 160, y: 20 },
+      activeFilter: 'all',
+      renderPending: false
+    };
+
+    let state = { ...defaultState };
+
+    const canvas = document.getElementById('filmCanvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    let sourceImg = null;
+    let previewCanvas = document.createElement('canvas');
+    let previewCtx = previewCanvas.getContext('2d', { willReadFrequently: true });
+
+    // Mobile Tab Navigation Logic
+    document.querySelectorAll('.m-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const tabKey = tab.dataset.tab;
+        const leftSidebar = document.getElementById('section-presets');
+        const rightSidebar = document.getElementById('section-right-controls');
+        const mobileSections = document.querySelectorAll('.mobile-section');
+
+        if (tabKey === 'presets') {
+          leftSidebar.classList.add('mobile-active');
+          rightSidebar.classList.remove('mobile-active');
+        } else {
+          leftSidebar.classList.remove('mobile-active');
+          rightSidebar.classList.add('mobile-active');
+
+          mobileSections.forEach(sec => {
+            if (sec.dataset.mGroup === tabKey) {
+              sec.classList.add('active-mobile-section');
+            } else {
+              sec.classList.remove('active-mobile-section');
+            }
+          });
+        }
+      });
+    });
+
+    // SVG Curve Setup & Touch Support
+    const svg = document.getElementById('curveSvg');
+    const p1El = document.getElementById('p1');
+    const p2El = document.getElementById('p2');
+    const curvePath = document.getElementById('curvePath');
+    let activePoint = null;
+
+    function updateCurveSvg() {
+      curvePath.setAttribute('d', `M 0 120 C ${state.p1.x} ${state.p1.y}, ${state.p2.x} ${state.p2.y}, 200 0`);
+      p1El.setAttribute('x', state.p1.x - 6);
+      p1El.setAttribute('y', state.p1.y - 6);
+      p2El.setAttribute('x', state.p2.x - 6);
+      p2El.setAttribute('y', state.p2.y - 6);
+      if (sourceImg) requestRender();
+    }
+
+    function getSvgCoords(clientX, clientY) {
+      const rect = svg.getBoundingClientRect();
+      return {
+        x: Math.max(0, Math.min(200, (clientX - rect.left) * (200 / rect.width))),
+        y: Math.max(0, Math.min(120, (clientY - rect.top) * (120 / rect.height)))
+      };
+    }
+
+    [p1El, p2El].forEach((el, idx) => {
+      el.addEventListener('mousedown', () => activePoint = idx === 0 ? state.p1 : state.p2);
+      el.addEventListener('touchstart', (e) => {
+        activePoint = idx === 0 ? state.p1 : state.p2;
+        e.preventDefault();
+      }, { passive: false });
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!activePoint) return;
+      const c = getSvgCoords(e.clientX, e.clientY);
+      activePoint.x = c.x;
+      activePoint.y = c.y;
+      updateCurveSvg();
+    });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!activePoint) return;
+      const touch = e.touches[0];
+      const c = getSvgCoords(touch.clientX, touch.clientY);
+      activePoint.x = c.x;
+      activePoint.y = c.y;
+      updateCurveSvg();
+      e.preventDefault();
+    }, { passive: false });
+
+    window.addEventListener('mouseup', () => activePoint = null);
+    window.addEventListener('touchend', () => activePoint = null);
+
+    // Presets List
+    function renderPresetsList() {
+      const container = document.getElementById('presetsList');
+      container.innerHTML = '';
+
+      filmDatabase.forEach(film => {
+        if (state.activeFilter !== 'all' && film.type !== state.activeFilter) return;
+
+        const row = document.createElement('div');
+        row.className = `preset-row ${film.id === state.preset ? 'active' : ''}`;
+        row.dataset.id = film.id;
+
+        const tagLabel = film.type === 'color' ? 'ЦВЕТ' : film.type === 'aero' ? 'СПЕЦ' : 'Ч/Б';
+
+        row.innerHTML = `
+          <div class="preset-meta">
+            <span class="preset-title">${film.name}</span>
+            <span class="preset-tag">${tagLabel}</span>
+          </div>
+          <span class="preset-gost">${film.gost}</span>
+        `;
+
+        row.addEventListener('click', () => {
+          document.querySelectorAll('.preset-row').forEach(r => r.classList.remove('active'));
+          row.classList.add('active');
+          selectPreset(film.id);
+        });
+
+        container.appendChild(row);
+      });
+    }
+
+    function selectPreset(id) {
+      state.preset = id;
+      const film = filmDatabase.find(f => f.id === id);
+      if (!film) return;
+
+      document.getElementById('presetDesc').innerText = film.desc;
+      document.getElementById('hudGost').innerText = film.gost;
+      document.getElementById('hudRes').innerText = film.res;
+      document.getElementById('hudDev').innerText = film.dev;
+
+      const defText = `${film.name} :: ${film.gost} :: 24A`;
+      state.frameText = defText;
+      document.getElementById('paramFrameText').value = defText;
+
+      if (sourceImg) requestRender();
+    }
+
+    document.querySelectorAll('.tab-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.activeFilter = btn.dataset.filter;
+        renderPresetsList();
+      });
+    });
+
+    function preparePreviewBuffer() {
+      const maxDim = 1200;
+      let scale = Math.min(1, maxDim / Math.max(sourceImg.width, sourceImg.height));
+      previewCanvas.width = Math.round(sourceImg.width * scale);
+      previewCanvas.height = Math.round(sourceImg.height * scale);
+      previewCtx.drawImage(sourceImg, 0, 0, previewCanvas.width, previewCanvas.height);
+      
+      canvas.width = previewCanvas.width;
+      canvas.height = previewCanvas.height;
+      
+      document.getElementById('uploadOverlay').classList.add('hidden');
+      requestRender();
+    }
+
+    function requestRender() {
+      if (!state.renderPending && sourceImg) {
+        state.renderPending = true;
+        requestAnimationFrame(renderFilmPipeline);
+      }
+    }
+
+    function applyToneCurveCustom(val, gamma, baseFog) {
+      let norm = val / 255.0;
+      norm = Math.max(0, (norm - baseFog) / (1.0 - baseFog));
+      let curved = Math.pow(norm, 1.0 / gamma);
+      return Math.min(255, Math.max(0, curved * 255.0));
+    }
+
+    function applyColorMatrixCustom(r, g, b, matrix) {
+      if (!matrix) return [r, g, b];
+      let nr = r / 255.0, ng = g / 255.0, nb = b / 255.0;
+      let outR = nr * matrix[0] + ng * matrix[1] + nb * matrix[2];
+      let outG = nr * matrix[3] + ng * matrix[4] + nb * matrix[5];
+      let outB = nr * matrix[6] + ng * matrix[7] + nb * matrix[8];
+      return [
+        Math.min(255, Math.max(0, outR * 255.0)),
+        Math.min(255, Math.max(0, outG * 255.0)),
+        Math.min(255, Math.max(0, outB * 255.0))
+      ];
+    }
+
+    function buildCurveLUT() {
+      const lut = new Uint8Array(256);
+      for (let i = 0; i < 256; i++) {
+        let t = i / 255;
+        let cy1 = 1 - (state.p1.y / 120);
+        let cy2 = 1 - (state.p2.y / 120);
+        let b = 3 * (1 - t) * (1 - t) * t * cy1 + 3 * (1 - t) * t * t * cy2 + t * t * t;
+        lut[i] = Math.min(255, Math.max(0, Math.round(b * 255)));
+      }
+      return lut;
+    }
+
+    function renderFilmPipeline() {
+      state.renderPending = false;
+      if (!previewCanvas.width) return;
+
+      const w = previewCanvas.width;
+      const h = previewCanvas.height;
+      
+      ctx.drawImage(previewCanvas, 0, 0);
+
+      const imgData = ctx.getImageData(0, 0, w, h);
+      const data = imgData.data;
+      const curveLut = buildCurveLUT();
+      const filmProfile = filmDatabase.find(f => f.id === state.preset) || filmDatabase[0];
+
+      let pushEv = state.pushPull * 22;
+      let pushContrast = state.pushPull * 8;
+      let pushGrainBonus = state.pushPull > 0 ? state.pushPull * 12 : 0;
+
+      let devGrainMult = 1.0;
+      let devContrastBonus = 0;
+      if (state.devType === 'rodinal') { devGrainMult = 1.6; devContrastBonus = 10; }
+      else if (state.devType === 'hydro') { devGrainMult = 1.2; devContrastBonus = 30; }
+      else if (state.devType === 'micro') { devGrainMult = 0.65; devContrastBonus = -8; }
+
+      const totalExp = state.exp + pushEv;
+      let totalContrast = state.contrast + pushContrast + devContrastBonus;
+      if (state.paper === 'baryta') { totalContrast -= 6; } else { totalContrast += 4; }
+
+      const expFactor = Math.pow(2, totalExp / 50);
+      const contrastFactor = (259 * (totalContrast + 255)) / (255 * (259 - totalContrast));
+      
+      const satVal = state.sat / 100;
+      const grainVal = (state.grain + pushGrainBonus) * 0.6 * devGrainMult * (filmProfile.grain ? filmProfile.grain.size : 1.0);
+      const grainScale = state.grainSize / 10;
+      const fadeVal = (state.fade / 50) * 35;
+      const p = state.preset;
+
+      const fR = 1 + (state.filterR / 50);
+      const fG = 1 + (state.filterG / 50);
+      const fB = 1 + (state.filterB / 50);
+
+      for (let i = 0; i < data.length; i += 4) {
+        let r = data[i] * expFactor * fR;
+        let g = data[i+1] * expFactor * fG;
+        let b = data[i+2] * expFactor * fB;
+
+        // Apply profile color matrix or convert to BW
+        if (filmProfile.colorShiftMatrix) {
+          [r, g, b] = applyColorMatrixCustom(r, g, b, filmProfile.colorShiftMatrix);
+        } else if (p === 'aerochrome') {
+          let origR = r, origG = g, origB = b;
+          r = origG * 1.8 + origR * 0.4;
+          g = origR * 0.7;
+          b = origB * 0.6;
+        } else if (p === 'tasmai810') {
+          let irGray = 0.6 * r + 0.3 * g + 0.1 * b;
+          r = g = b = Math.min(255, irGray * 1.35);
+        } else {
+          let mono = 0.299 * r + 0.587 * g + 0.114 * b;
+          if (p === 'mikrat200') mono = mono > 115 ? 245 : 15;
+          r = g = b = mono;
+        }
+
+        r = contrastFactor * (r - 128) + 128;
+        g = contrastFactor * (g - 128) + 128;
+        b = contrastFactor * (b - 128) + 128;
+
+        let lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        if (lum > 128) {
+          let hL = (lum - 128) / 127;
+          r += state.highlights * hL; g += state.highlights * hL; b += state.highlights * hL;
+        } else {
+          let sL = (128 - lum) / 128;
+          r += state.shadows * sL; g += state.shadows * sL; b += state.shadows * sL;
+        }
+
+        r += state.temp * 1.2;
+        b -= state.temp * 1.2;
+
+        if (filmProfile.gamma && filmProfile.baseFog) {
+          r = applyToneCurveCustom(r, filmProfile.gamma, filmProfile.baseFog);
+          g = applyToneCurveCustom(g, filmProfile.gamma, filmProfile.baseFog);
+          b = applyToneCurveCustom(b, filmProfile.gamma, filmProfile.baseFog);
+        }
+
+        if (state.paper === 'baryta') { r = r * 1.03 + 4; b = b * 0.96; }
+
+        if (state.toner === 'sepia') {
+          let avg = 0.299 * r + 0.587 * g + 0.114 * b;
+          r = avg * 1.15; g = avg * 0.95; b = avg * 0.75;
+        } else if (state.toner === 'selenium') {
+          let avg = 0.299 * r + 0.587 * g + 0.114 * b;
+          r = avg * 0.92; g = avg * 0.95; b = avg * 1.12;
+        } else if (state.toner === 'cyanotype') {
+          let avg = 0.299 * r + 0.587 * g + 0.114 * b;
+          r = avg * 0.7; g = avg * 0.9; b = avg * 1.3;
+        }
+
+        if (state.dyeFade > 0 && p !== 'aerochrome') {
+          let fade = state.dyeFade / 100;
+          r = r * (1 - fade * 0.25) + g * (fade * 0.15);
+          g = g * (1 - fade * 0.1) + b * (fade * 0.1);
+          b = b * (1 - fade * 0.35) + 20 * fade;
+        }
+
+        if (filmProfile.type === 'color' || p === 'aerochrome') {
+          let curLum = 0.299 * r + 0.587 * g + 0.114 * b;
+          r = curLum + (r - curLum) * satVal;
+          g = curLum + (g - curLum) * satVal;
+          b = curLum + (b - curLum) * satVal;
+        }
+
+        if (state.splitShadow > 0) {
+          let sWeight = (255 - lum) / 255;
+          r += state.splitShadow * 1.2 * sWeight;
+          g += state.splitShadow * 0.6 * sWeight;
+        }
+
+        r = curveLut[Math.min(255, Math.max(0, Math.round(r)))];
+        g = curveLut[Math.min(255, Math.max(0, Math.round(g)))];
+        b = curveLut[Math.min(255, Math.max(0, Math.round(b)))];
+
+        r = r * (1 - fadeVal / 255) + fadeVal;
+        g = g * (1 - fadeVal / 255) + fadeVal;
+        b = b * (1 - fadeVal / 255) + fadeVal;
+
+        let halationIntensity = filmProfile.halation ? filmProfile.halation.intensity * 30 : state.halation;
+        if (halationIntensity > 0 && (r + g + b) > 480) {
+          r += halationIntensity * 0.45;
+          g += halationIntensity * 0.08;
+        }
+
+        if (grainVal > 0) {
+          let shadowW = filmProfile.grain ? filmProfile.grain.shadowWeight : 0.7;
+          let roughness = filmProfile.grain ? filmProfile.grain.roughness : 0.7;
+          let pixelIndex = Math.floor((i / 4) / grainScale);
+          let brightness = (r + g + b) / 3.0;
+          let grainFactor = (1.0 - (brightness / 255.0) * shadowW) * roughness;
+          const noise = ((Math.sin(pixelIndex * 12.9898) * 43758.5453) % 1) * grainVal * 2.0 * grainFactor - (grainVal * grainFactor);
+          r += noise; g += noise; b += noise;
+        }
+
+        if (state.dust > 0 && Math.random() < (state.dust / 8000)) {
+          let scratch = Math.random() > 0.5 ? 255 : 0;
+          r = g = b = scratch;
+        }
+
+        data[i]     = Math.min(255, Math.max(0, r));
+        data[i + 1] = Math.min(255, Math.max(0, g));
+        data[i + 2] = Math.min(255, Math.max(0, b));
+      }
+
+      ctx.putImageData(imgData, 0, 0);
+
+      if (state.chroma > 0) {
+        let shift = Math.round(state.chroma);
+        let tempCanvas = document.createElement('canvas');
+        tempCanvas.width = w; tempCanvas.height = h;
+        let tCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+        tCtx.drawImage(canvas, 0, 0);
+
+        ctx.globalCompositeOperation = 'screen';
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(tempCanvas, -shift, 0);
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
+      if (state.bloom > 0) {
+        let glowCanvas = document.createElement('canvas');
+        glowCanvas.width = w / 2; glowCanvas.height = h / 2;
+        let gCtx = glowCanvas.getContext('2d');
+        gCtx.filter = `blur(${Math.round(state.bloom / 8)}px)`;
+        gCtx.drawImage(canvas, 0, 0, w / 2, h / 2);
+
+        ctx.globalCompositeOperation = 'screen';
+        ctx.globalAlpha = state.bloom / 100;
+        ctx.drawImage(glowCanvas, 0, 0, w, h);
+        ctx.globalAlpha = 1.0;
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
+      if (state.leak > 0) {
+        let lGrad = ctx.createRadialGradient(w, 0, 10, w, 0, Math.max(w, h) * 0.8);
+        lGrad.addColorStop(0, `rgba(255, 90, 20, ${state.leak / 100})`);
+        lGrad.addColorStop(0.5, `rgba(255, 40, 0, ${(state.leak / 100) * 0.4})`);
+        lGrad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = lGrad;
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      if (state.spots > 0) {
+        ctx.fillStyle = `rgba(255, 255, 255, ${state.spots / 300})`;
+        for (let s = 0; s < Math.round(state.spots / 5); s++) {
+          let sx = (Math.sin(s * 99) * 0.5 + 0.5) * w;
+          let sy = (Math.cos(s * 33) * 0.5 + 0.5) * h;
+          let sr = (Math.sin(s * 12) * 0.5 + 0.5) * 20 + 5;
+          ctx.beginPath();
+          ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      if (state.vignette > 0) {
+        const radGrad = ctx.createRadialGradient(w/2, h/2, Math.min(w,h) * 0.3, w/2, h/2, Math.max(w,h) * 0.75);
+        radGrad.addColorStop(0, 'rgba(0,0,0,0)');
+        radGrad.addColorStop(1, `rgba(0,0,0,${state.vignette / 100})`);
+        ctx.fillStyle = radGrad;
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      if (state.frame !== 'none') {
+        render35mmFrame(w, h);
+      }
+
+      if (state.imprint) {
+        renderLabImprint(w, h);
+      }
+    }
+
+    function render35mmFrame(w, h) {
+      const margin = Math.round(Math.min(w, h) * 0.08);
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(0, 0, w, margin);
+      ctx.fillRect(0, h - margin, w, margin);
+
+      ctx.fillStyle = '#111111';
+      const holeW = Math.round(margin * 0.5);
+      const holeH = Math.round(margin * 0.6);
+      const holeGap = holeW * 1.8;
+
+      for (let x = 10; x < w; x += holeGap) {
+        ctx.fillRect(x, Math.round(margin * 0.2), holeW, holeH);
+        ctx.fillRect(x, h - margin + Math.round(margin * 0.2), holeW, holeH);
+      }
+
+      ctx.font = `${Math.round(margin * 0.35)}px 'JetBrains Mono', monospace`;
+      ctx.fillStyle = 'rgba(230, 230, 230, 0.7)';
+      ctx.fillText(state.frameText, Math.round(w * 0.15), Math.round(margin * 0.65));
+      ctx.fillText("SAFETY FILM", Math.round(w * 0.7), h - Math.round(margin * 0.35));
+    }
+
+    function renderLabImprint(w, h) {
+      let imprintText = state.imprintText;
+      if (!imprintText || imprintText.trim() === '') {
+        const film = filmDatabase.find(f => f.id === state.preset);
+        const filmName = film ? film.name : 'UNKNOWN';
+        const dateStr = new Date().toISOString().slice(0, 10);
+        imprintText = `${filmName} | DEV: ${state.devType.toUpperCase()} | PAPER: ${state.paper.toUpperCase()} | ${dateStr}`;
+      }
+      
+      ctx.font = `bold ${Math.max(10, Math.round(w * 0.018))}px 'JetBrains Mono', monospace`;
+      ctx.fillStyle = 'rgba(255, 180, 60, 0.85)';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+      ctx.shadowBlur = 4;
+      
+      const padding = Math.round(w * 0.03);
+      ctx.fillText(imprintText, padding, h - padding);
+      ctx.shadowBlur = 0;
+    }
+
+    // Upload Triggers
+    document.getElementById('btnCenterUpload').addEventListener('click', () => {
+      document.getElementById('fileUploader').click();
+    });
+    document.getElementById('btnHeaderUpload').addEventListener('click', () => {
+      document.getElementById('fileUploader').click();
+    });
+
+    document.getElementById('fileUploader').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const img = new Image();
+      img.onload = () => {
+        sourceImg = img;
+        preparePreviewBuffer();
+      };
+      img.src = URL.createObjectURL(file);
+    });
+
+    const bindSlider = (id, key, formatFn) => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener('input', (e) => {
+        state[key] = parseFloat(e.target.value);
+        const valElem = document.getElementById('val' + key.charAt(0).toUpperCase() + key.slice(1));
+        if (valElem) valElem.innerText = formatFn(state[key]);
+        requestRender();
+      });
+    };
+
+    bindSlider('paramPush', 'pushPull', v => v === 0 ? 'NORMAL' : v > 0 ? `PUSH +${v}` : `PULL ${v}`);
+    bindSlider('paramDyeFade', 'dyeFade', v => `${v}%`);
+    bindSlider('paramExp', 'exp', v => (v / 50).toFixed(1));
+    bindSlider('paramContrast', 'contrast', v => v > 0 ? `+${v}` : v);
+    bindSlider('paramHighlights', 'highlights', v => v > 0 ? `+${v}` : v);
+    bindSlider('paramShadows', 'shadows', v => v > 0 ? `+${v}` : v);
+    bindSlider('paramFade', 'fade', v => `${v}%`);
+    bindSlider('paramGrain', 'grain', v => `${v}%`);
+    bindSlider('paramGrainSize', 'grainSize', v => `${(v/10).toFixed(1)}x`);
+    bindSlider('paramClarity', 'clarity', v => v > 0 ? `+${v}` : v);
+    bindSlider('paramFilterR', 'filterR', v => v > 0 ? `+${v}` : v);
+    bindSlider('paramFilterG', 'filterG', v => v > 0 ? `+${v}` : v);
+    bindSlider('paramFilterB', 'filterB', v => v > 0 ? `+${v}` : v);
+    bindSlider('paramTemp', 'temp', v => v > 0 ? `+${v}` : v);
+    bindSlider('paramSat', 'sat', v => `${v}%`);
+    bindSlider('paramSplitShadow', 'splitShadow', v => `${v}%`);
+    bindSlider('paramHalation', 'halation', v => `${v}%`);
+    bindSlider('paramBloom', 'bloom', v => `${v}%`);
+    bindSlider('paramChroma', 'chroma', v => `+${v}`);
+    bindSlider('paramVignette', 'vignette', v => `${v}%`);
+    bindSlider('paramLeak', 'leak', v => `${v}%`);
+    bindSlider('paramSpots', 'spots', v => `${v}%`);
+    bindSlider('paramDust', 'dust', v => `${v}%`);
+
+    document.getElementById('paramDevType').addEventListener('change', (e) => { state.devType = e.target.value; requestRender(); });
+    document.getElementById('paramPaper').addEventListener('change', (e) => { state.paper = e.target.value; requestRender(); });
+    document.getElementById('paramToner').addEventListener('change', (e) => { state.toner = e.target.value; requestRender(); });
+    document.getElementById('paramFrame').addEventListener('change', (e) => { state.frame = e.target.value; requestRender(); });
+    document.getElementById('paramFrameText').addEventListener('input', (e) => { state.frameText = e.target.value; requestRender(); });
+    document.getElementById('paramImprintText').addEventListener('input', (e) => { state.imprintText = e.target.value; requestRender(); });
+    document.getElementById('paramImprint').addEventListener('change', (e) => { state.imprint = e.target.checked; requestRender(); });
+
+    // Reset All
+    document.getElementById('btnReset').addEventListener('click', () => {
+      state = { ...defaultState };
+      document.querySelectorAll('input[type="range"]').forEach(input => {
+        const key = input.id.replace('param', '');
+        const lowerKey = key.charAt(0).toLowerCase() + key.slice(1);
+        if (state[lowerKey] !== undefined) {
+          input.value = state[lowerKey];
+          input.dispatchEvent(new Event('input'));
+        }
+      });
+      document.getElementById('paramDevType').value = 'st2';
+      document.getElementById('paramPaper').value = 'rc';
+      document.getElementById('paramToner').value = 'none';
+      document.getElementById('paramFrame').value = 'none';
+      document.getElementById('paramFrameText').value = state.frameText;
+      document.getElementById('paramImprint').checked = false;
+      document.getElementById('paramImprintText').value = '';
+      updateCurveSvg();
+    });
+
+    // Export PNG
+    document.getElementById('btnExport').addEventListener('click', () => {
+      if (!sourceImg) return;
+      renderFilmPipeline();
+      const link = document.createElement('a');
+      link.download = `SvemaLab_Mobile_${state.preset}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    // Initialization
+    renderPresetsList();
+    selectPreset('svema64');
+    updateCurveSvg();
+  </script>
+</body>
+</html>
