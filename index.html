@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>СВЕМА LAB :: b 1708.02</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="assets/styles/base.css">
+  <link rel="stylesheet" href="assets/styles/layout.css">
+  <link rel="stylesheet" href="assets/styles/components.css">
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <span>СВЕМА LAB :: MOBILE</span>
+    </div>
+    <div class="header-controls">
+      <button class="btn" id="btnHeaderUpload">Загрузить</button>
+      <button class="btn" id="btnAB" title="Показать оригинал">A/B</button>
+      <button class="btn" id="btnHistory" title="История">История</button>
+      <button class="btn" id="btnReset" title="Сбросить">Сброс</button>
+      <button class="btn btn-primary" id="btnExport">Экспорт</button>
+    </div>
+  </header>
+
+  <!-- Mobile Navigation Tabs -->
+  <nav class="mobile-nav-tabs" id="mobileNavTabs">
+    <button class="m-tab active" data-tab="presets">Пресеты</button>
+    <button class="m-tab" data-tab="lab">Лаб & Тон</button>
+    <button class="m-tab" data-tab="fx">Оптика & Зерно</button>
+    <button class="m-tab" data-tab="frame">Рамка & Текст</button>
+  </nav>
+
+  <div class="app-layout">
+    
+    <!-- LEFT SIDEBAR: Presets & Filters -->
+    <aside class="sidebar sidebar-left mobile-active" id="section-presets">
+      <div class="filter-group">
+        <button class="tab-item active" data-filter="all">Все</button>
+        <button class="tab-item" data-filter="bw">Ч/Б</button>
+        <button class="tab-item" data-filter="color">Цвет</button>
+        <button class="tab-item" data-filter="aero">Спец</button>
+      </div>
+      <div class="presets-list" id="presetsList"></div>
+      <div class="panel-block" style="padding:12px; flex-shrink:0;">
+        <span class="panel-title" style="display:block; margin-bottom:4px;">Паспорт эмульсии</span>
+        <p class="desc-text" id="presetDesc">Выберите пленку...</p>
+      </div>
+    </aside>
+
+    <!-- CENTER: Canvas Stage & Centered Upload Overlay -->
+    <main class="viewport-stage">
+      <div class="canvas-container" id="canvasContainer">
+        <canvas id="filmCanvas"></canvas>
+        <div id="inspectOverlay"><canvas id="inspectCanvas" width="202" height="130"></canvas><div id="inspectMeta" class="inspect-meta">Наведите курсор на кадр</div></div>
+        
+        <div id="uploadOverlay" class="upload-overlay">
+          <button class="btn btn-primary" id="btnCenterUpload" style="padding: 14px 24px; font-size: 12px; font-weight: 700; box-shadow: 0 4px 20px rgba(0,0,0,0.8);">
+            📁 ЗАГРУЗИТЬ ФОТО
+          </button>
+          <span style="font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Нажмите для выбора из галереи</span>
+        </div>
+        <input type="file" id="fileUploader" accept="image/*" style="display: none;">
+      </div>
+      
+      <div class="status-bar">
+        <div>ЧУВСТВИТЕЛЬНОСТЬ: <span id="hudGost" style="color:var(--text)">ГОСТ 64</span></div>
+        <div>РАЗРЕШЕНИЕ: <span id="hudRes" style="color:var(--text)">110 лин/мм</span></div>
+        <div>ПРОЯВИТЕЛЬ: <span id="hudDev" style="color:var(--text)">СТ-2</span></div>
+      </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR: Advanced Controls -->
+    <aside class="sidebar sidebar-right" id="section-right-controls">
+      
+      <!-- SECTION LAB & TONE (Mobile Tab 2) -->
+      <div class="mobile-section" data-m-group="lab">
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">1. Кривая плотности D-LogE</span></div>
+          <div class="panel-body">
+            <div class="curve-box">
+              <svg id="curveSvg" viewBox="0 0 200 120">
+                <path d="M0 30 H200 M0 60 H200 M0 90 H200 M50 0 V120 M100 0 V120 M150 0 V120" stroke="#1a1a1a" stroke-width="1"/>
+                <path id="curvePath" d="M 0 120 C 50 100, 150 20, 200 0" fill="none" stroke="#ffffff" stroke-width="2"/>
+                <rect id="p1" x="36" y="96" width="12" height="12" fill="#ffffff" style="cursor:pointer;"/>
+                <rect id="p2" x="156" y="16" width="12" height="12" fill="#ffffff" style="cursor:pointer;"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">2. Проявка и Химия</span></div>
+          <div class="panel-body">
+            <div class="control-unit">
+              <div class="control-head"><span>Проявитель</span></div>
+              <select id="paramDevType" class="select-input">
+                <option value="st2">СТ-2 / D-76 (Стандарт)</option>
+                <option value="rodinal">Родинал / R-09 (Острое зерно)</option>
+                <option value="hydro">Гидрохиноновый Д-19 (Графика)</option>
+                <option value="micro">Microdol-X (Мелкозернистый)</option>
+              </select>
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>PUSH / PULL</span><span class="control-val" id="valPush">NORMAL</span></div>
+              <input type="range" id="paramPush" min="-2" max="3" value="0" step="1">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Старение (Dye Fade)</span><span class="control-val" id="valDyeFade">0%</span></div>
+              <input type="range" id="paramDyeFade" min="0" max="100" value="0">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">3. Тональный баланс</span></div>
+          <div class="panel-body">
+            <div class="control-unit">
+              <div class="control-head"><span>Экспозиция (EV)</span><span class="control-val" id="valExp">0.0</span></div>
+              <input type="range" id="paramExp" min="-100" max="100" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Контраст</span><span class="control-val" id="valContrast">0</span></div>
+              <input type="range" id="paramContrast" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Света</span><span class="control-val" id="valHighlights">0</span></div>
+              <input type="range" id="paramHighlights" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Тени</span><span class="control-val" id="valShadows">0</span></div>
+              <input type="range" id="paramShadows" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Точка черного / Вуаль</span><span class="control-val" id="valFade">8%</span></div>
+              <input type="range" id="paramFade" min="0" max="50" value="8">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION FX & OPTICS (Mobile Tab 3) -->
+      <div class="mobile-section" data-m-group="fx">
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">4. Структура эмульсии</span></div>
+          <div class="panel-body">
+            <div class="control-unit">
+              <div class="control-head"><span>Интенсивность зерна</span><span class="control-val" id="valGrain">30%</span></div>
+              <input type="range" id="paramGrain" min="0" max="100" value="30">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Размер зерна</span><span class="control-val" id="valGrainSize">1.0x</span></div>
+              <input type="range" id="paramGrainSize" min="10" max="30" value="10">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">5. Светофильтры и Тонирование</span></div>
+          <div class="panel-body">
+            <div class="control-unit">
+              <div class="control-head"><span>Красный фильтр</span><span class="control-val" id="valFilterR">0</span></div>
+              <input type="range" id="paramFilterR" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Зеленый фильтр</span><span class="control-val" id="valFilterG">0</span></div>
+              <input type="range" id="paramFilterG" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Синий фильтр</span><span class="control-val" id="valFilterB">0</span></div>
+              <input type="range" id="paramFilterB" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Цветовая температура</span><span class="control-val" id="valTemp">0</span></div>
+              <input type="range" id="paramTemp" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Насыщенность</span><span class="control-val" id="valSat">100%</span></div>
+              <input type="range" id="paramSat" min="0" max="200" value="100">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Тонирование теней (Сепия)</span><span class="control-val" id="valSplitShadow">0</span></div>
+              <input type="range" id="paramSplitShadow" min="0" max="50" value="0">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">6. Бумага, Тонеры и Оптика</span></div>
+          <div class="panel-body">
+            <div class="control-unit">
+              <div class="control-head"><span>Тип фотобумаги</span></div>
+              <select id="paramPaper" class="select-input">
+                <option value="rc">RC (Пластиковая, холодная)</option>
+                <option value="baryta">Baryta (Баритовая, теплая)</option>
+              </select>
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Художественный тонер</span></div>
+              <select id="paramToner" class="select-input">
+                <option value="none">Без тонирования</option>
+                <option value="sepia">Сепия (Warm Brown)</option>
+                <option value="selenium">Селен (Cold Blue)</option>
+                <option value="cyanotype">Цианотип</option>
+              </select>
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Дисторсия (Бочка/Подушка)</span><span class="control-val" id="valDistortion">0</span></div>
+              <input type="range" id="paramDistortion" min="-50" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Хроматическая аберрация</span><span class="control-val" id="valChroma">0</span></div>
+              <input type="range" id="paramChroma" min="0" max="20" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Свечение / Блум (Bloom)</span><span class="control-val" id="valBloom">0%</span></div>
+              <input type="range" id="paramBloom" min="0" max="100" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Ореол (Halation)</span><span class="control-val" id="valHalation">15%</span></div>
+              <input type="range" id="paramHalation" min="0" max="100" value="15">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Виньетирование</span><span class="control-val" id="valVignette">20%</span></div>
+              <input type="range" id="paramVignette" min="0" max="100" value="20">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION FRAME & TEXT (Mobile Tab 4) -->
+      <div class="mobile-section" data-m-group="frame">
+        <div class="panel-block">
+          <div class="panel-header"><span class="panel-title">7. Рамка, Текст и Дефекты</span></div>
+          <div class="panel-body">
+            <div class="control-unit">
+              <div class="control-head"><span>Рамка 35mm с перфорацией</span></div>
+              <select id="paramFrame" class="select-input">
+                <option value="none">Без рамки</option>
+                <option value="svema">35mm СВЕМА ГОСТ</option>
+                <option value="orwo">35mm ORWO SAFETY FILM</option>
+                <option value="tasma">35mm ТАСМА КАЗАНЬ</option>
+              </select>
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Текст на рамке 35mm</span></div>
+              <input type="text" id="paramFrameText" class="select-input" value="СВЕМА 64 :: ГОСТ 64-85 :: 24A">
+            </div>
+            <div class="control-unit" style="margin-top: 4px;">
+              <label class="checkbox-label">
+                <input type="checkbox" id="paramImprint" style="width:16px; height:16px; accent-color:#fff;">
+                Впечатывать штамп (Lab Imprint)
+              </label>
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Текст штампа (пусто = авто)</span></div>
+              <input type="text" id="paramImprintText" class="select-input" placeholder="Автоматический штамп">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Засветка (Light Leak)</span><span class="control-val" id="valLeak">0%</span></div>
+              <input type="range" id="paramLeak" min="0" max="100" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Пыль и царапины</span><span class="control-val" id="valDust">0%</span></div>
+              <input type="range" id="paramDust" min="0" max="50" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Формат и кадрирование</span></div>
+              <select id="paramFrameFormat" class="select-input"><option value="35">35mm / 3:2</option><option value="6x6">120 / 6×6</option><option value="6x7">120 / 6×7</option><option value="4x5">Листовая 4×5</option><option value="anamorphic">Анаморфный 2.39:1</option></select>
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Сабатье / соляризация</span><span class="control-val" id="valSabattier">0%</span></div>
+              <input type="range" id="paramSabattier" min="0" max="100" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Ретикуляция эмульсии</span><span class="control-val" id="valReticulation">0%</span></div>
+              <input type="range" id="paramReticulation" min="0" max="100" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Бромные потёки</span><span class="control-val" id="valBromide">0%</span></div>
+              <input type="range" id="paramBromide" min="0" max="100" value="0">
+            </div>
+            <div class="control-unit">
+              <div class="control-head"><span>Год находки катушки</span><span class="control-val" id="valFoundYear">2026</span></div>
+              <input type="range" id="paramFoundYear" min="1980" max="2026" value="2026">
+            </div>
+            <div class="control-unit"><div class="control-head"><span>Состояние плёнки</span></div><select id="paramCondition" class="select-input"><option value="fresh">Свежая / холодильник</option><option value="drawer">Ящик 1990-х</option><option value="attic">Чердак / жара</option><option value="camera">Найдена в камере</option></select></div>
+            <div class="control-unit"><div class="control-head"><span>Кадрирование</span></div><select id="paramCrop" class="select-input"><option value="free">Исходное соотношение</option><option value="3:2">3:2</option><option value="1:1">1:1</option><option value="4:5">4:5</option><option value="239:100">2.39:1</option></select></div>
+            <div class="control-unit"><div class="control-head"><span>Поворот</span><span class="control-val" id="valRotation">0°</span></div><input type="range" id="paramRotation" min="-180" max="180" value="0"></div>
+            <div class="control-unit"><div class="control-head"><span>Рецепт проявки</span></div><select id="paramRecipe" class="select-input"><option value="manual">Ручной</option><option value="d76">D-76 · 20°C · 9:30</option><option value="rodinal">Rodinal 1+50 · 20°C · 13:00</option><option value="stand">Stand development · 60 min</option></select></div>
+            <label class="checkbox-label"><input type="checkbox" id="paramGrainLock"> Зафиксировать зерно</label>
+            <div class="control-unit"><div class="control-head"><span>Номер кадра</span></div><input type="text" id="paramFrameNumber" class="select-input" value="24A"></div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  
+  <script src="assets/data/film-data.js" defer></script>
+  <script src="assets/app.js" defer></script>
+</body>
+</html>
+
+
