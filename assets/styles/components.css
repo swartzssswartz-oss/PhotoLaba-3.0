@@ -204,12 +204,4 @@
       .status-bar { padding-bottom: max(0px, env(safe-area-inset-bottom)); }
     }
 
-    /* Строгая лабораторная тема — компактная, монохромная, без лишнего декора. */
-    :root { --surface:#080808; --surface-elevated:#0d0d0d; --border:#1c1c1c; --border-strong:#353535; --text-muted:#838383; }
-    header { height:42px; padding:0 14px; background:#050505; }
-    .brand { gap:8px; font-size:10px; letter-spacing:.12em; }.brand-mark { width:6px; height:6px; }.header-controls { gap:0; }
-    .btn { min-height:28px; padding:5px 10px; border-color:var(--border); font-size:9px; letter-spacing:.08em; }.header-controls .btn + .btn { border-left-color:transparent; }.btn:hover { background:#141414; }.btn-primary { background:#e8e8e8; border-color:#e8e8e8; }
-    .sidebar-left { width:270px; }.sidebar-right { width:350px; }.panel-header { padding:9px 14px; }.panel-title { font-size:9px; letter-spacing:.14em; }.panel-body { padding:12px 14px; gap:10px; background:#070707; }
-    .preset-row { padding:9px 11px; border-left-width:2px; }.preset-row.active { background:#111; }.control-unit { gap:4px; }.control-head { font-size:8px; letter-spacing:.07em; }
-    select.select-input, input.select-input { background:#090909; padding:7px 8px; font-size:10px; } input[type="range"] { height:2px; background:#383838; margin:7px 0; } input[type="range"]::-webkit-slider-thumb { width:12px; height:12px; border-radius:0 !important; }.checkbox-label { font-size:9px; }.status-bar { height:28px; background:#050505; }
-  
+   
