@@ -62,7 +62,39 @@
         }
       });
     })();
+    // ────────────────────────────────────────────────────────────────────
+    // Защита слайдеров от случайных тапов при скролле (мобильные).
+    // Раньше касание ЛЮБОЙ точки трека слайдера пальцем — даже мимоходом,
+    // когда человек просто листает страницу — сразу же прыгало значением
+    // в точку тапа (стандартное поведение <input type="range">). Теперь
+    // тач засчитывается только если он начался рядом с самим бегунком —
+    // иначе это, скорее всего, просто скролл, и мы его не трогаем.
+    // На мышь/трекпад (десктоп) это не влияет — там клик по треку
+    // по-прежнему сразу переставляет значение, как и ожидается.
+    // ────────────────────────────────────────────────────────────────────
+    (function guardSlidersFromAccidentalTouch() {
+      const THUMB_SIZE = window.matchMedia('(max-width: 900px)').matches ? 24 : 18;
+      const HIT_PADDING = 18; // запас вокруг бегунка, px
 
+      document.addEventListener('touchstart', (e) => {
+        const input = e.target.closest && e.target.closest('input[type="range"]');
+        if (!input) return;
+        const touch = e.touches[0];
+        if (!touch) return;
+
+        const min = parseFloat(input.min || '0');
+        const max = parseFloat(input.max || '100');
+        const val = parseFloat(input.value || '0');
+        const rect = input.getBoundingClientRect();
+        const percent = max > min ? (val - min) / (max - min) : 0;
+        const usable = Math.max(0, rect.width - THUMB_SIZE);
+        const thumbCenterX = rect.left + THUMB_SIZE / 2 + percent * usable;
+
+        if (Math.abs(touch.clientX - thumbCenterX) > (THUMB_SIZE / 2 + HIT_PADDING)) {
+          e.preventDefault(); // мимо бегунка — считаем это скроллом, не хватаем слайдер
+        }
+      }, { passive: false });
+    })();
     // Точки мастер-кривой крупнее на мобильном — легче попасть пальцем
     const CURVE_HANDLE = window.matchMedia('(max-width: 900px)').matches ? 20 : 12;
 
