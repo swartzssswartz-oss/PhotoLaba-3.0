@@ -1,0 +1,287 @@
+
+    /* ── Модульный движок: общие компоновочные примитивы ───────────────── */
+
+    .module-note {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      padding-bottom: 2px;
+    }
+
+    .channel-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .channel-grid .control-unit { gap: 3px; }
+    .channel-col-label {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: .1em;
+      text-align: center;
+      color: var(--text);
+      font-weight: 700;
+      padding: 3px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2px;
+    }
+    .channel-col-label.ch-r { color: #ff9a8a; border-color: #4a2320; }
+    .channel-col-label.ch-g { color: #9affa0; border-color: #204a26; }
+    .channel-col-label.ch-b { color: #9ac8ff; border-color: #20344a; }
+
+    .mixer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* ── Блок маски (единый компонент для всех эффектов) ───────────────── */
+    .mask-block {
+      border: 1px solid var(--border);
+      background: #030303;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .mask-block-title {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mask-block-title::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      background: var(--text-muted);
+      display: inline-block;
+    }
+
+    .mask-custom {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--border);
+    }
+
+    .mask-custom[hidden] { display: none; }
+    .mask-row[hidden] { display: none; }
+
+    /* ── Разделитель номера модуля внутри заголовка панели ─────────────── */
+    .panel-title .mnum {
+      display: inline-block;
+      width: 14px; height: 14px;
+      line-height: 14px;
+      text-align: center;
+      background: var(--text);
+      color: #000;
+      font-size: 8px;
+      margin-right: 6px;
+    }
+
+    .recipe-hint {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-muted);
+      padding: 6px 8px;
+      background: #030303;
+      border: 1px solid var(--border);
+    }
+
+    /* ── Аккордеон: сворачиваемые панели (критично для мобильной длины) ── */
+    .panel-header {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .panel-chevron {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      transition: transform 0.15s ease;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+    .panel-block.collapsed .panel-chevron { transform: rotate(-90deg); }
+    .panel-block.collapsed .panel-body { display: none; }
+
+    /* ══════════════════════════════════════════════════════════════════
+       МОБИЛЬНАЯ ОПТИМИЗАЦИЯ (≤900px): увеличенные тач-таргеты,
+       адаптивные сетки, более компактные вкладки.
+       ══════════════════════════════════════════════════════════════════ */
+    @media (max-width: 900px) {
+
+      /* Тач-таргеты: слайдеры, чекбоксы, кнопки — минимум ~40px области касания */
+      input[type="range"] {
+        height: 4px;
+        margin: 14px 0;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+        margin-top: -10px;
+        border-radius: 0 !important;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border: none;
+        background: var(--text);
+        border-radius: 0 !important;
+      }
+      .checkbox-label {
+        padding: 8px 0;
+        font-size: 11px;
+      }
+      .checkbox-label input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+      .btn {
+        min-height: 40px;
+        padding: 8px 12px;
+        font-size: 10px;
+      }
+      select.select-input, input.select-input {
+        padding: 11px 10px;
+        font-size: 12px;
+      }
+      .panel-header {
+        padding: 13px 14px;
+      }
+      .panel-title {
+        font-size: 10px;
+      }
+      .preset-row {
+        padding: 12px;
+      }
+
+      /* R/G/B колонки (Lift/Gamma/Gain) — на узком экране в 3 колонки не влезают
+         подписи, поэтому раскладываем каждый канал на всю ширину. */
+      .channel-grid {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+      .channel-col-label {
+        margin-top: 10px;
+        padding: 6px 0;
+        font-size: 10px;
+      }
+      .channel-grid > div:first-child .channel-col-label { margin-top: 0; }
+
+      .mixer-grid {
+        gap: 10px;
+      }
+
+      /* Точки мастер-кривой крупнее — легче попасть пальцем */
+      .curve-box { height: 140px; }
+
+      /* Вкладки: 5 штук должны быть доступны без лишнего скролла */
+      .m-tab {
+        min-width: 66px;
+        padding: 11px 4px;
+        font-size: 8.5px;
+      }
+
+      /* Маска: чуть крупнее отступы для удобного тапа по селекту зоны */
+      .mask-block { padding: 12px; }
+    }
+
+    @media (max-width: 420px) {
+      .m-tab { min-width: 58px; font-size: 8px; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       Баннер установки PWA — снизу экрана, в фирменном ЧБ/моно стиле,
+       без скруглений (в духе всего остального интерфейса).
+       ══════════════════════════════════════════════════════════════════ */
+    .install-banner {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 500;
+      background: #0a0a0a;
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateY(140%);
+      transition: transform 0.25s ease;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+    .install-banner.visible { transform: translateY(0); }
+
+    .install-banner-icon {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      color: #000;
+      font-size: 15px;
+      font-family: var(--font-mono);
+    }
+
+    .install-banner-text { flex: 1; min-width: 0; }
+    .install-banner-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+    .install-banner-sub {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+    .install-share-glyph { color: var(--text); }
+
+    .install-banner-install {
+      flex-shrink: 0;
+      background: var(--text);
+      color: #000;
+      border: none;
+      padding: 9px 14px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+    }
+    .install-banner-close {
+      flex-shrink: 0;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+    }
+    .install-banner-close:hover { color: var(--text); }
+
+    @media (max-width: 480px) {
+      .install-banner { left: 8px; right: 8px; bottom: 8px; padding: 11px; gap: 10px; }
+      .install-banner-sub { font-size: 9px; }
+    }
