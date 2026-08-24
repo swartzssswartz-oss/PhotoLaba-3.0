@@ -1,0 +1,19 @@
+{
+  "name": "СВЕМА LAB :: Film Simulation Engine",
+  "short_name": "СВЕМА LAB",
+  "description": "Модульный движок симуляции фотоплёнки: Film Response, Grain Engine, Developer, Push/Pull, Halation, Bloom, Emulsion Defects, Exposure Uniformity.",
+  "start_url": "../index.html",
+  "scope": "../",
+  "id": "svema-lab-engine",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "ru",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
