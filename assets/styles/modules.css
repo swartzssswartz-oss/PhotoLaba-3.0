@@ -1,0 +1,741 @@
+
+    /* ── Модульный движок: общие компоновочные примитивы ───────────────── */
+
+    .module-note {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      padding-bottom: 2px;
+    }
+
+    .channel-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .channel-grid .control-unit { gap: 3px; }
+    .channel-col-label {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: .1em;
+      text-align: center;
+      color: var(--text);
+      font-weight: 700;
+      padding: 3px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2px;
+    }
+    .channel-col-label.ch-r { color: #ff9a8a; border-color: #4a2320; }
+    .channel-col-label.ch-g { color: #9affa0; border-color: #204a26; }
+    .channel-col-label.ch-b { color: #9ac8ff; border-color: #20344a; }
+
+    .mixer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* ── Блок маски (единый компонент для всех эффектов) ───────────────── */
+    /* Раньше это была отдельная рамка-карточка внутри и без того тесной
+       панели ("коробка в коробке"). Теперь по умолчанию (target=all/тени/
+       полутона/света) это просто ОДНА строка — выглядит как обычный
+       control-unit, а не как вложенный виджет. Разворачивается в подстроки
+       только когда реально выбрана "Своя маска". */
+    .mask-block {
+      border: none;
+      background: transparent;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .mask-block-title {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .mask-block-title::before { content: none; }
+
+    .mask-custom {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px 0 2px 12px;
+      margin-top: 2px;
+      border-top: none;
+      border-left: 2px solid var(--border);
+    }
+
+    .mask-custom[hidden] { display: none; }
+    .mask-row[hidden] { display: none; }
+
+    /* ── Разделитель номера модуля внутри заголовка панели ─────────────── */
+    .panel-title .mnum {
+      display: inline-block;
+      width: 15px; height: 15px;
+      line-height: 15px;
+      text-align: center;
+      background: var(--text);
+      color: #000;
+      font-size: 8px;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .recipe-hint {
+      font-family: var(--font-mono);
+      font-size: 8px;
+      color: var(--text-muted);
+      padding: 6px 8px;
+      background: transparent;
+      border-left: 2px solid var(--border);
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       ПЛОСКИЙ РЕДИЗАЙН ПАНЕЛЕЙ — вместо "коробка в коробке" (рамка +
+       свой фон на каждом уровне: panel-block → panel-header → panel-body
+       → mask-block) разделение теперь держится на типографике и отступе,
+       а не на рамках. Один плоский фон на весь сайдбар, разница между
+       заголовком модуля и подписью слайдера — в размере/весе шрифта.
+       ══════════════════════════════════════════════════════════════════ */
+    .panel-block {
+      border-bottom: none;
+      margin-bottom: 2px;
+    }
+
+    .panel-header {
+      padding: 16px 16px 10px;
+      background: transparent;
+      border-bottom: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .panel-block:first-child .panel-header { border-top: none; }
+
+    .panel-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+    }
+
+    .panel-body {
+      padding: 2px 16px 22px;
+      background: transparent;
+      gap: 16px;
+    }
+
+    /* ── Аккордеон: сворачиваемые панели (критично для мобильной длины) ── */
+    .panel-header {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .panel-chevron {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      transition: transform 0.15s ease;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+    .panel-block.collapsed .panel-chevron { transform: rotate(-90deg); }
+    .panel-block.collapsed .panel-body { display: none; }
+
+    /* ══════════════════════════════════════════════════════════════════
+       МОБИЛЬНАЯ ОПТИМИЗАЦИЯ (≤900px): увеличенные тач-таргеты,
+       адаптивные сетки, более компактные вкладки.
+       ══════════════════════════════════════════════════════════════════ */
+    @media (max-width: 900px) {
+
+      /* Тач-таргеты: слайдеры, чекбоксы, кнопки — минимум ~40px области касания */
+      input[type="range"] {
+        height: 4px;
+        margin: 14px 0;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        width: 24px;
+        height: 24px;
+        margin-top: -10px;
+        border-radius: 0 !important;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border: none;
+        background: var(--text);
+        border-radius: 0 !important;
+      }
+      .checkbox-label {
+        padding: 8px 0;
+        font-size: 11px;
+      }
+      .checkbox-label input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+      .btn {
+        min-height: 40px;
+        padding: 8px 12px;
+        font-size: 10px;
+      }
+      select.select-input, input.select-input {
+        padding: 11px 10px;
+        font-size: 12px;
+      }
+      .panel-header {
+        padding: 15px 16px 10px;
+      }
+      .preset-row {
+        padding: 12px;
+      }
+
+      /* R/G/B колонки (Lift/Gamma/Gain) — на узком экране в 3 колонки не влезают
+         подписи, поэтому раскладываем каждый канал на всю ширину. */
+      .channel-grid {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+      .channel-col-label {
+        margin-top: 10px;
+        padding: 6px 0;
+        font-size: 10px;
+      }
+      .channel-grid > div:first-child .channel-col-label { margin-top: 0; }
+
+      .mixer-grid {
+        gap: 10px;
+      }
+
+      /* Точки мастер-кривой крупнее — легче попасть пальцем */
+      .curve-box { height: 140px; }
+
+      /* Вкладки: 5 штук должны быть доступны без лишнего скролла */
+      .m-tab {
+        min-width: 66px;
+        padding: 11px 4px;
+        font-size: 8.5px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .m-tab { min-width: 58px; font-size: 8px; }
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       Landscape на мобильном: колоночная раскладка (canvas 38vh высоты) отдаёт
+       слишком мало места картинке из-за малой высоты экрана — именно тогда, когда
+       телефон развернули, чтобы лучше рассмотреть кадр. Переключаемся на ту же
+       схему «в ряд», что и на десктопе (canvas + панель рядом), но с узкой панелью.
+       (max-width: 900px) чтобы не затронуть самые большие телефоны (у них landscape-ширина уже
+       больше 900px и итак включается десктопная схема). Лежит после основного мобильного
+       блока (в modules.css, загружается последним), чтобы перебить его flex-direction:column.
+       ═══════════════════════════════════════════════════════════════ */
+    @media (max-width: 900px) and (orientation: landscape) and (min-height: 320px) {
+      header { order: 1; }
+      .app-layout { order: 2; flex-direction: row; }
+      .mobile-nav-tabs { order: 3; }
+
+      .viewport-stage {
+        height: 100%;
+        min-height: 0;
+        flex: 1;
+        order: 0; /* сбрасывает портретный order:1 — в ряду нужен естественный порядок DOM */
+      }
+      .sidebar-left, .sidebar-right {
+        width: 280px;
+        max-width: 42vw;
+        flex: 0 0 auto;
+        height: 100%;
+        order: 0; /* сбрасывает портретный order:2 */
+      }
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       Сброс одного слайдера двойным тапом/кликом по его подписи (control-head) — на телефоне
+       точно попасть пальцем в нулевую отметку тонкого трека тяжело; короткая вспышка подсветки
+       даёт заметную обратную связь, чтобы было ясно, что сброс сработал.
+       ════════════════════════════════════════════════════════════ */
+    @keyframes controlResetFlash {
+      0% { background: rgba(255,255,255,.28); }
+      100% { background: rgba(255,255,255,0); }
+    }
+    .control-unit.reset-flash { animation: controlResetFlash .5s ease; }
+
+    /* ════════════════════════════════════════════════════════════
+       Баннер установки PWA — снизу экрана, в фирменном чб/моно стиле,
+       без скруглений (в духе всего остального интерфейса).
+       ══════════════════════════════════════════════════════════════════ */
+    .install-banner {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 500;
+      background: #0a0a0a;
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateY(140%);
+      transition: transform 0.25s ease;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+    .install-banner.visible { transform: translateY(0); }
+
+    .install-banner-icon {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      color: #000;
+      font-size: 15px;
+      font-family: var(--font-mono);
+    }
+
+    .install-banner-text { flex: 1; min-width: 0; }
+    .install-banner-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+    .install-banner-sub {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+    .install-share-glyph { color: var(--text); }
+
+    .install-banner-install {
+      flex-shrink: 0;
+      background: var(--text);
+      color: #000;
+      border: none;
+      padding: 9px 14px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+    }
+    .install-banner-close {
+      flex-shrink: 0;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+    }
+    .install-banner-close:hover { color: var(--text); }
+
+    @media (max-width: 480px) {
+      .install-banner { left: 8px; right: 8px; bottom: 8px; padding: 11px; gap: 10px; }
+      .install-banner-sub { font-size: 9px; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       Анимация экспорта: рендер в полном разрешении не мгновенный
+       (особенно на телефоне), поэтому вместо "зависшего" интерфейса
+       показываем процесс явно — в духе лабораторного инструмента.
+       ══════════════════════════════════════════════════════════════════ */
+    .export-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 700;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .export-overlay.visible { opacity: 1; pointer-events: auto; }
+
+    .export-card {
+      width: min(280px, 82vw);
+      background: #0a0a0a;
+      border: 1px solid var(--border-strong);
+      padding: 26px 22px 22px;
+      text-align: center;
+    }
+
+    .export-icon {
+      width: 38px;
+      height: 38px;
+      margin: 0 auto 16px;
+      background: #fff;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      transition: transform 0.2s ease;
+    }
+    .export-icon.spin { animation: exportSpin 1.4s linear infinite; }
+    @keyframes exportSpin { to { transform: rotate(360deg); } }
+
+    .export-title {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 16px;
+      min-height: 26px;
+      line-height: 1.4;
+    }
+
+    .export-track {
+      height: 2px;
+      background: var(--border-strong);
+      overflow: hidden;
+      position: relative;
+    }
+    .export-fill {
+      position: absolute;
+      top: 0; bottom: 0; left: 0;
+      width: 40%;
+      background: #fff;
+      animation: exportSweep 1.1s ease-in-out infinite;
+    }
+    @keyframes exportSweep {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+    .export-card.success .export-fill { animation: none; width: 100%; }
+    .export-card.error .export-fill { animation: none; width: 100%; background: #b33; }
+
+    .export-share-btn {
+      margin-top: 14px;
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      padding: 10px;
+      cursor: pointer;
+    }
+    .export-share-btn:hover { color: var(--text); border-color: var(--text); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       Мобильный экспорт: картинка показывается прямо на странице (а не в
+       отдельной вкладке) — долгий тап по ней срабатывает нативный контекстный
+       сейв браузера так же надёжно, а фоновая вкладка не зависит от тайминга
+       рендера (в фоне браузеры иногда не догружают location.href до возврата). */
+    .export-preview-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 750;
+      background: rgba(0, 0, 0, 0.94);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      padding: 54px 14px 16px;
+    }
+    .export-preview-overlay.visible { opacity: 1; pointer-events: auto; }
+    .export-preview-topbar {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 14px;
+    }
+    .export-preview-title {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .05em;
+      text-transform: uppercase; color: var(--text-muted);
+    }
+    .export-preview-close {
+      background: transparent; border: 1px solid var(--border-strong); color: var(--text);
+      width: 30px; height: 30px; font-size: 14px; line-height: 1; cursor: pointer;
+    }
+    .export-preview-img-wrap {
+      flex: 1; width: 100%; min-height: 0;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .export-preview-img-wrap img {
+      max-width: 100%; max-height: 100%; object-fit: contain;
+      border: 1px solid var(--border-strong);
+    }
+    .export-preview-hint {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--text-muted); text-align: center;
+      margin-top: 14px; max-width: 340px; line-height: 1.5;
+    }
+    .export-preview-actions { display: flex; gap: 10px; margin-top: 12px; width: 100%; max-width: 340px; }
+    .export-preview-actions .btn { flex: 1; justify-content: center; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       Окно кадрирования — полноэкранное, перетаскиваемая рамка поверх
+       исходного фото. box-shadow-спотлайт вместо 4 пересчитываемых "штор".
+       ══════════════════════════════════════════════════════════════════ */
+    .crop-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 800;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    .crop-overlay.visible { opacity: 1; }
+
+    .crop-toolbar {
+      height: 44px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .crop-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .crop-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 15px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+    }
+    .crop-close:hover { color: var(--text); }
+
+    .crop-stage {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      min-height: 0;
+      padding: 12px;
+    }
+
+    .crop-image-wrap {
+      position: relative;
+      touch-action: none;
+    }
+    .crop-image-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .crop-box {
+      position: absolute;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.78);
+      border: 1px solid #fff;
+      cursor: move;
+      touch-action: none;
+      background-image:
+        linear-gradient(to right, transparent calc(33.333% - 0.5px), rgba(255,255,255,.35) calc(33.333% - 0.5px), rgba(255,255,255,.35) calc(33.333% + 0.5px), transparent calc(33.333% + 0.5px), transparent calc(66.666% - 0.5px), rgba(255,255,255,.35) calc(66.666% - 0.5px), rgba(255,255,255,.35) calc(66.666% + 0.5px), transparent calc(66.666% + 0.5px)),
+        linear-gradient(to bottom, transparent calc(33.333% - 0.5px), rgba(255,255,255,.35) calc(33.333% - 0.5px), rgba(255,255,255,.35) calc(33.333% + 0.5px), transparent calc(33.333% + 0.5px), transparent calc(66.666% - 0.5px), rgba(255,255,255,.35) calc(66.666% - 0.5px), rgba(255,255,255,.35) calc(66.666% + 0.5px), transparent calc(66.666% + 0.5px));
+    }
+
+    .crop-handle {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: #fff;
+      touch-action: none;
+    }
+    .crop-handle-nw { left: -11px; top: -11px; cursor: nwse-resize; }
+    .crop-handle-ne { right: -11px; top: -11px; cursor: nesw-resize; }
+    .crop-handle-sw { left: -11px; bottom: -11px; cursor: nesw-resize; }
+    .crop-handle-se { right: -11px; bottom: -11px; cursor: nwse-resize; }
+
+    .crop-ratios {
+      flex-shrink: 0;
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .crop-ratio-btn {
+      flex: 1;
+      min-width: 64px;
+      background: #0a0a0a;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 12px 6px;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    .crop-ratio-btn.active {
+      background: #fff;
+      color: #000;
+      font-weight: 700;
+    }
+
+    /* ── Ряд поворота: кнопки 90° по краям, слайдер выравнивания в центре ── */
+    .crop-rotate-row {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-top: 1px solid var(--border);
+      background: #060606;
+    }
+    .crop-rotate-btn {
+      flex-shrink: 0;
+      background: #0a0a0a;
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 10px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .crop-rotate-btn:hover { background: #161616; }
+
+    .crop-straighten {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .crop-straighten-head {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 8px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .crop-straighten-val { color: var(--text); font-weight: 700; }
+    .crop-straighten-slider { margin: 0; }
+
+    .crop-actions {
+      flex-shrink: 0;
+      display: flex;
+      gap: 1px;
+      padding: 10px;
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      background: #050505;
+    }
+    .crop-actions .btn { flex: 1; justify-content: center; padding: 13px; font-size: 11px; }
+
+    @media (max-width: 480px) {
+      .crop-handle { width: 28px; height: 28px; }
+      .crop-handle-nw { left: -14px; top: -14px; }
+      .crop-handle-ne { right: -14px; top: -14px; }
+      .crop-handle-sw { left: -14px; bottom: -14px; }
+      .crop-handle-se { right: -14px; bottom: -14px; }
+      .crop-ratio-btn { min-width: 56px; font-size: 9px; padding: 11px 4px; }
+      .crop-rotate-row { padding: 8px 10px; gap: 8px; }
+      .crop-rotate-btn { padding: 9px 10px; font-size: 10px; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       Диалог "Сохранить как пресет" — компактная модалка по центру.
+       ══════════════════════════════════════════════════════════════════ */
+    .save-preset-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 750;
+      background: rgba(0, 0, 0, 0.82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+    }
+    .save-preset-overlay.visible { opacity: 1; pointer-events: auto; }
+
+    .save-preset-card {
+      width: min(300px, 84vw);
+      background: #0a0a0a;
+      border: 1px solid var(--border-strong);
+      padding: 20px;
+    }
+    .save-preset-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .save-preset-hint {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      line-height: 1.5;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    #savePresetName { margin-bottom: 14px; }
+    .save-preset-actions { display: flex; gap: 1px; }
+    .save-preset-actions .btn { flex: 1; justify-content: center; padding: 12px; }
+
+    /* ── Строка пресета в режиме "Мои" — с кнопкой удаления ── */
+    .preset-row-custom { display: flex; align-items: center; gap: 8px; }
+    .preset-row-custom .preset-meta { flex: 1; min-width: 0; }
+    .preset-del-btn {
+      flex-shrink: 0;
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .preset-del-btn:hover { color: #ff6a5a; border-color: #ff6a5a; }
+
+    .presets-empty {
+      padding: 24px 16px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      text-align: center;
+    }
