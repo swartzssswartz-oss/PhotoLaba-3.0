@@ -1,0 +1,257 @@
+
+    :root {
+      /* ===== iOS Liquid Glass — графитовая (тёмная) версия ===================
+         Тот же язык (стекло, блюр, объём), что и в светлой версии, но база
+         инвертирована: тёмный графитовый холст вместо белого, и акцент —
+         теперь светлый (белёсый), а не тёмный — иначе «чёрная» кнопка на
+         графитовом фоне просто не была бы видна. Это стандартное поведение
+         монохромного акцента в iOS между светлой/тёмной темой. */
+      --bg: #000000;
+      --bg-wash-a: #6b4726;
+      --bg-wash-b: #223f5c;
+      --bg-wash-c: #3a2a4a;
+      /* Стекло стало настоящим "материалом": не плоская полупрозрачная
+         заливка, а диагональный градиент блика (ярче в верхнем левом углу,
+         тусклее к центру, снова чуть светлее у нижнего края) — так на
+         поверхности читается кривизна, как у реального выпуклого стекла,
+         а не просто "полупрозрачный прямоугольник". */
+      --surface: linear-gradient(165deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 55%, rgba(255, 255, 255, 0.09) 100%);
+      --surface-elevated: linear-gradient(165deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.08) 55%, rgba(255, 255, 255, 0.15) 100%);
+      --surface-solid: #2c2c2e;
+      --border: rgba(255, 255, 255, 0.12);
+      --border-strong: rgba(255, 255, 255, 0.22);
+      --text: #f2f2f7;
+      --text-muted: #98989d;
+      --accent: #f2f2f2;
+      --accent-contrast: #1c1c1e;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --radius-pill: 999px;
+      /* Блюр сильнее и с приподнятой яркостью/насыщенностью — раньше при
+         умеренном блюре и низкой прозрачности стекло больше читалось как
+         "просто полупрозрачная панель", а не как оптический материал,
+         через который заметно размывается и подсвечивается то, что сзади. */
+      --glass-blur: blur(34px) saturate(220%) brightness(1.12);
+      /* Внутренний блик по верхнему краю — свет "цепляется" за кромку
+         выпуклого стекла. Добавляется вместе с обычной тенью на всех
+         крупных стеклянных поверхностях (шапка, сайдбары, панели, шторки). */
+      --glass-rim: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+
+      /* Объёмное «стекло» для кнопок — выпуклая поверхность (блик сверху,
+         тень снизу изнутри) + внешняя тень, чтобы кнопка казалась
+         приподнятой над панелью. На графитовой теме блик слабее (на тёмной
+         поверхности он и в жизни менее выражен), а внешняя тень темнее и
+         гуще, чтобы «приподнятость» вообще читалась на тёмном фоне. */
+      --btn-shadow:
+        inset 0 1.5px 0 rgba(255, 255, 255, 0.16),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.3),
+        0 1px 2px rgba(0, 0, 0, 0.3),
+        0 8px 18px rgba(0, 0, 0, 0.45);
+      --btn-shadow-active:
+        inset 0 2px 5px rgba(0, 0, 0, 0.5),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+      --btn-shadow-accent:
+        inset 0 1.5px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.05),
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        0 10px 22px rgba(0, 0, 0, 0.4);
+      --btn-shadow-accent-active:
+        inset 0 3px 6px rgba(0, 0, 0, 0.15),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.35);
+      /* Раньше --font-mono был техническим JetBrains Mono для «ГОСТовских»
+         подписей — в iOS-языке моноширинных технических лейблов нет вообще,
+         поэтому обе переменные теперь указывают на один и тот же системный
+         шрифт: это единственная правка, которая меняет шрифт сразу везде,
+         где угодно в CSS встречается var(--font-mono). */
+      --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+      --font-mono: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    header, .app-layout, .mobile-nav-tabs {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Top Bar */
+    header {
+      height: 52px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-elevated);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      box-shadow: var(--glass-rim), 0 1px 20px rgba(0, 0, 0, 0.25);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .header-controls::-webkit-scrollbar {
+      display: none;
+    }
+
+    .btn {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.05) 100%);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 0.5px solid rgba(255, 255, 255, 0.16);
+      box-shadow: var(--btn-shadow);
+      color: var(--text);
+      padding: 9px 16px;
+      font-size: 13px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0;
+      cursor: pointer;
+      transition: box-shadow 0.12s ease, transform 0.1s ease;
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      border-radius: var(--radius-pill);
+      touch-action: manipulation;
+    }
+
+    .btn:hover {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.08) 100%);
+    }
+    .btn:active {
+      box-shadow: var(--btn-shadow-active);
+      transform: scale(0.97);
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #ffffff 0%, #e2e2e6 100%);
+      color: var(--accent-contrast);
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: var(--btn-shadow-accent);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(180deg, #ffffff 0%, #eaeaee 100%);
+    }
+    .btn-primary:active {
+      box-shadow: var(--btn-shadow-accent-active);
+      background: linear-gradient(180deg, #e2e2e6 0%, #d1d1d6 100%);
+    }
+
+    .btn.active {
+      background: linear-gradient(180deg, #ffffff 0%, #e2e2e6 100%);
+      color: var(--accent-contrast);
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: var(--btn-shadow-accent);
+      font-weight: 700;
+    }
+
+    /* Mobile Navigation Tabs */
+    .mobile-nav-tabs {
+      display: none;
+      background: var(--surface-elevated);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border-top: 0.5px solid var(--border);
+      box-shadow: var(--glass-rim), 0 -2px 20px rgba(0, 0, 0, 0.25);
+      overflow-x: auto;
+      flex-shrink: 0;
+      scrollbar-width: none;
+      z-index: 100;
+    }
+
+    .mobile-nav-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .m-tab {
+      flex: 1;
+      min-width: 85px;
+      padding: 12px 6px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: none;
+      cursor: pointer;
+      text-align: center;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      touch-action: manipulation;
+    }
+
+    .m-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: transparent;
+      font-weight: 700;
+    }
+    /* «Приподнятая» иконка активной вкладки — визуально та же кнопка,
+       что и остальные, просто встроена в панель, а не над ней. */
+    .m-tab.active::before {
+      content: '';
+      display: block;
+      width: 5px; height: 5px;
+      margin: 0 auto 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.16);
+    }

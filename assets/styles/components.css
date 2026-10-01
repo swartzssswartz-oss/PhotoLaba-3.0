@@ -1,0 +1,350 @@
+    .control-unit {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+
+    .control-head {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-muted);
+      text-transform: none;
+      font-weight: 500;
+    }
+
+    .control-val {
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: opacity 0.18s ease, background 0.15s ease, color 0.18s ease;
+      opacity: 0;
+      pointer-events: none;
+      user-select: none;
+    }
+    .control-unit:hover .control-val,
+    .control-unit:focus-within .control-val,
+    .control-val.editing {
+      opacity: 1;
+      pointer-events: auto;
+      user-select: auto;
+    }
+    .control-val:hover {
+      background: rgba(255,255,255,0.08);
+    }
+    .control-val.editing {
+      background: rgba(255,255,255,0.12);
+      outline: 1px solid var(--accent);
+    }
+
+    @media (max-width: 900px) {
+      .control-val {
+        opacity: 1;
+        pointer-events: auto;
+        user-select: auto;
+      }
+    }
+
+    select.select-input, input.select-input {
+      background: var(--surface-elevated);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      color: var(--text);
+      border: 0.5px solid var(--border-strong);
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      outline: none;
+      width: 100%;
+      border-radius: var(--radius-sm);
+    }
+
+    select.select-input {
+      cursor: pointer;
+    }
+
+    /* Слайдеры в стиле iOS: светлый трек-пилюля + белый круглый бегунок
+       с мягкой тенью (как в системных настройках/Photos), вместо жёсткого
+       квадратного технического бегунка советской темы. */
+    input[type="range"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.14);
+      outline: none;
+      margin: 8px 0;
+      border-radius: var(--radius-pill);
+      touch-action: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 26px;
+      height: 26px;
+      background: radial-gradient(circle at 35% 30%, #ffffff 0%, #f0f0f2 60%, #e2e2e6 100%);
+      cursor: pointer;
+      border-radius: 50%;
+      box-shadow: var(--btn-shadow), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+      touch-action: none;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 26px;
+      height: 26px;
+      background: radial-gradient(circle at 35% 30%, #ffffff 0%, #f0f0f2 60%, #e2e2e6 100%);
+      cursor: pointer;
+      border: none;
+      border-radius: 50%;
+      box-shadow: var(--btn-shadow), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+      touch-action: none;
+    }
+
+    @media (max-width: 900px) {
+      input[type="range"] {
+        height: 8px;
+        margin: 16px 0;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        width: 32px;
+        height: 32px;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    /* Slider value tooltip */
+    .slider-tooltip {
+      position: absolute;
+      background: var(--surface-elevated);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 0.5px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: 4px 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      z-index: 10;
+      white-space: nowrap;
+    }
+    .slider-tooltip.visible {
+      opacity: 1;
+      transform: translateY(-32px);
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      cursor: pointer;
+      color: var(--text);
+      padding: 4px 0;
+    }
+
+    /* Viewport Area — рабочий холст с фото намеренно остаётся тёмным
+       (как в Photos/Lightroom Mobile/VSCO) независимо от темы интерфейса:
+       нейтральный тёмный фон вокруг кадра не искажает восприятие тонов
+       фото, и на нём светлое стеклянное шасси читается чище. */
+    .viewport-stage {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #000000;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .canvas-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Важно: ширина/высота заданы явно (не max-width/height), иначе смена
+       внутреннего буфера канваса (черновой превью во время драга слайдера ↔
+       полное качество после отпускания — см. lowResMode в app.js) меняет
+       видимый размер элемента на экране, а не только резкость картинки —
+       из-за этого превью на глаз "прыгало"/уменьшалось при каждой правке. */
+    canvas#filmCanvas {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      object-fit: contain;
+      transition: transform 0.05s linear;
+      will-change: transform;
+    }
+    /* Pinch-zoom и пан по превью обрабатываются вручную (см.
+       initCanvasPinchZoom в app.js) — браузер не должен параллельно
+       пытаться скроллить/зумить страницу теми же пальцами поверх канваса. */
+    .canvas-container {
+      touch-action: none;
+    }
+
+    /* Centered Upload Overlay */
+    .upload-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      z-index: 50;
+      transition: opacity 0.2s ease;
+    }
+
+    .upload-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .status-bar {
+      height: 34px;
+      padding: 0 16px;
+      border-top: 0.5px solid var(--border);
+      background: var(--surface-elevated);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      gap: 10px;
+    }
+
+    .status-bar div {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-shrink: 1;
+      min-width: 0;
+    }
+
+    @media (max-width: 420px) {
+      .status-bar {
+        gap: 6px;
+        padding: 0 12px;
+      }
+      .status-bar div {
+        font-size: 11px;
+      }
+    }
+
+    .desc-text {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+
+    /* MOBILE RESPONSIVE MEDIA QUERY */
+    @media (max-width: 900px) {
+      /* Вкладки навигации перенесены вниз экрана (order, без изменения DOM) —
+         основная навигация должна быть в зоне большого пальца при одноручном
+         удержании, а не вверху, как в большинстве мобильных апп. */
+      header { order: 1; }
+      .app-layout { order: 2; }
+      .mobile-nav-tabs { order: 3; }
+
+      /* Бренд-текст в шапке занимает место, которое нужнее 4 кнопкам управления —
+         на узких экранах остаётся только маркер (квадратик). */
+      .brand span { display: none; }
+
+      .app-layout {
+        flex-direction: column;
+      }
+      .mobile-nav-tabs {
+        display: flex;
+        border-bottom: none;
+        border-top: 0.5px solid var(--border);
+      }
+      /* Canvas всегда первый визуально, независимо от того, какой сайдбар активен — раньше
+         на вкладке «Пресеты» левый сайдбар (первый в DOM) оказывался выше картинки. */
+      .viewport-stage {
+        height: 38vh;
+        min-height: 220px;
+        flex: none;
+        order: 1;
+      }
+      .sidebar-left, .sidebar-right {
+        width: 100%;
+        flex: 1;
+        border: none;
+        display: none;
+        position: relative;
+        order: 2;
+      }
+      .sidebar-left.mobile-active,
+      .sidebar-right.mobile-active {
+        display: flex;
+      }
+      .sidebar-right {
+        overflow-y: auto;
+      }
+      .mobile-section {
+        display: none;
+        flex-direction: column;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        flex: 1;
+        height: 100%;
+      }
+      .mobile-section.active-mobile-section {
+        display: flex;
+      }
+      /* Отступы под чёлку/home-indicator на iOS — вкладки теперь у низу, им нужен
+         отступ от нижнего края, а статус-бар теперь внутри canvas-области, ей нижний
+         отступ больше не край экрана. */
+      header { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+      .mobile-nav-tabs { padding-bottom: env(safe-area-inset-bottom, 0); }
+
+      /* Undo/Redo кнопки более компактные на мобильных */
+      #btnUndo, #btnRedo {
+        padding: 8px 10px;
+        font-size: 14px;
+        min-width: 36px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .header-controls { gap: 4px; }
+      .header-controls .btn { padding: 8px 10px; font-size: 12px; }
+    }
+
+    @media (max-width: 380px) {
+      .header-controls { gap: 2px; }
+      .header-controls .btn { padding: 6px 8px; font-size: 11px; }
+      .status-bar { font-size: 11px; padding: 0 12px; }
+      .mobile-nav-tabs { gap: 0; }
+      .m-tab { min-width: 60px; padding: 10px 4px; font-size: 10px; }
+    }
