@@ -3,7 +3,7 @@
   "id": "mveccm4ozfoj",
   "type": "article",
   "title": "Test",
-  "by": "",
+  "by": "214",
   "tags": [
    "test"
   ],
@@ -12,9 +12,9 @@
    {
     "t": "img",
     "src": "content/photos/mveccjkidwzd.jpg",
-    "cap": "",
-    "by": "",
-    "size": "wide",
+    "cap": "124",
+    "by": "124",
+    "size": "half",
     "al": "l"
    },
    {
@@ -59,6 +59,7 @@
    }
   ],
   "img": "content/photos/mveccjkidwzd.jpg",
+  "th": "",
   "text": "TEST\n\n12414"
  },
  {
