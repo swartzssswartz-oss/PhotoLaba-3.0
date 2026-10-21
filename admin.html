@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#000000">
+<title>Админка — Т.О 37.ЛАБ</title>
+<style>
+:root{--paper:#e5e3dd;--blue:#0a4aa8;--blue2:#1557c8;--line:#2e2e2e;--muted:#9ca1a8;--mono:Consolas,"Courier New",monospace;--disp:"Arial Black",Impact,Arial,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:#000;color:#fff;font-family:Arial,Helvetica,sans-serif}
+body{min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+button,input,textarea{font:inherit;color:inherit;border-radius:0}
+:focus-visible{outline:2px solid var(--blue2);outline-offset:2px}
+header{display:flex;height:60px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#000;z-index:5}
+.brand{display:flex;align-items:center;gap:12px;padding:0 22px;border-right:1px solid var(--line);font:900 14px var(--disp);letter-spacing:.06em}
+.mark{position:relative;width:24px;height:26px}.mark:before{content:"";position:absolute;left:0;top:0;width:8px;height:25px;background:var(--blue)}.mark:after{content:"";position:absolute;left:0;bottom:0;width:24px;height:5px;background:#fff}
+.sp{flex:1}
+.hb{display:flex;align-items:center;padding:0 20px;border-left:1px solid var(--line);background:none;border-top:0;border-bottom:0;border-right:0;font:10px var(--mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase;cursor:pointer}
+.hb:hover{color:#fff;background:#0e0e0e}
+h1{margin:0;padding:clamp(22px,4vw,48px) clamp(16px,3vw,40px) 18px;font:900 clamp(40px,8vw,104px)/.84 var(--disp);letter-spacing:-.07em;text-transform:uppercase;border-bottom:1px solid var(--line)}
+.tabs{display:flex;border-bottom:1px solid var(--line);padding:0 clamp(16px,3vw,40px);overflow-x:auto}
+.tab{padding:14px 18px;background:none;border:0;border-right:1px solid var(--line);font:10px var(--mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.tab:first-child{border-left:1px solid var(--line)}.tab:hover{color:#fff}.tab.on{background:var(--paper);color:#000;font-weight:700;box-shadow:inset 0 -4px 0 var(--blue)}
+.box{width:100%;max-width:820px;padding:clamp(18px,3vw,40px) clamp(16px,3vw,40px) 80px}
+label{display:block;margin:0 0 16px;font:10px var(--mono);letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+input[type=text],input[type=password],input[type=date],select,textarea{display:block;width:100%;margin-top:7px;padding:11px 12px;background:#0b0b0b;border:1px solid #4a4a4a;font:14px/1.5 Arial,sans-serif;letter-spacing:0;text-transform:none;color:#fff}
+input:focus,textarea:focus,select:focus{outline:0;border-color:var(--blue2);box-shadow:inset 0 -3px 0 var(--blue2)}
+textarea{min-height:260px;resize:vertical}
+input[type=file]{display:block;margin-top:7px;width:100%;padding:12px;border:1px dashed #4a4a4a;background:#0b0b0b;color:var(--muted);font:11px var(--mono)}
+.btn{display:inline-flex;align-items:center;justify-content:space-between;gap:18px;min-height:46px;padding:0 22px;border:1px solid #fff;background:#fff;color:#000;font:700 10px var(--mono);letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.btn:hover:not(:disabled){background:var(--blue2);border-color:var(--blue2);color:#fff}.btn:disabled{opacity:.4;cursor:wait}
+.btn.sm{min-height:34px;padding:0 12px;background:transparent;color:#fff;border-color:#4a4a4a;font-weight:400}.btn.sm:hover:not(:disabled){background:#b3261e;border-color:#b3261e}
+.note{margin:20px 0 0;padding-left:12px;border-left:2px solid var(--blue);color:var(--muted);font:12px/1.65 var(--mono)}
+.note b{color:#fff}
+.item{display:grid;grid-template-columns:60px 1fr auto;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.item img,.item i{width:60px;height:60px;object-fit:cover;background:var(--blue);display:block}
+.item b{display:block;font:700 14px Arial;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.item span{font:10px var(--mono);color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+#st{position:fixed;left:0;right:0;bottom:0;padding:13px clamp(16px,3vw,40px);background:#000;border-top:1px solid var(--line);font:11px var(--mono);letter-spacing:.1em;text-transform:uppercase;display:none;z-index:9}
+#st.on{display:block}#st.err{background:#b3261e;border-color:#b3261e}#st.ok{background:var(--blue);border-color:var(--blue)}
+.hide{display:none!important}
+
+.btn.gh{min-height:38px;padding:0 14px;background:transparent;color:#fff;border-color:#4a4a4a;font-weight:400;margin:0}
+.btn.gh:hover:not(:disabled){background:#0e0e0e;border-color:#fff;color:#fff}
+.blk{border:1px solid var(--line);background:#0b0b0b;padding:12px;margin-bottom:10px}
+.blk.over{border-color:var(--blue2);box-shadow:0 -3px 0 var(--blue2)}
+.bh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.grip{font:10px var(--mono);letter-spacing:.12em;color:var(--muted);text-transform:uppercase;cursor:grab;padding:6px 4px;user-select:none}
+.bh button{width:32px;height:32px;margin-left:4px;border:1px solid #4a4a4a;background:#000;cursor:pointer}
+.bh button:hover{background:var(--blue);border-color:var(--blue)}
+.blk input[type=text],.blk textarea{margin:0 0 8px}.blk textarea{min-height:110px}
+.pv{display:block;max-width:100%;max-height:220px;margin-bottom:8px;border:1px solid var(--line)}
+.sgs{display:inline-flex;flex-wrap:wrap;margin:4px 10px 0 0}
+.sg{padding:8px 12px;border:1px solid #4a4a4a;margin-right:-1px;background:none;font:10px var(--mono);letter-spacing:.08em;color:var(--muted);text-transform:uppercase;cursor:pointer}
+.sg:hover{color:#fff}.sg.on{background:#fff;color:#000;border-color:#fff}
+.add{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 24px}
+.pick{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.94);overflow:auto;padding:clamp(16px,3vw,40px)}
+.pick .pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;max-width:900px;margin:16px auto 0}
+.pick .pg button{padding:0;border:1px solid var(--line);background:#0b0b0b;cursor:pointer;aspect-ratio:1}.pick .pg button:hover{border-color:var(--blue2)}
+.pick .pg img{width:100%;height:100%;object-fit:cover;display:block}
+.fres{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:0 0 22px}.fres button{padding:0;border:1px solid var(--line);background:#0b0b0b;cursor:pointer;text-align:left;color:#fff}.fres button:hover{border-color:var(--blue2)}.fres img,.fres i{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;background:var(--blue)}.fres span{display:block;padding:7px 8px;font:10px/1.35 var(--mono);letter-spacing:.04em}.fsel{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}.fsel img{width:110px;border:1px solid var(--line)}.fsel b{display:block;font:900 20px/1 var(--disp);letter-spacing:-.04em;text-transform:uppercase;margin-bottom:6px}
+</style>
+</head>
+<body>
+<header><a class="brand" href="to37lab.html"><i class="mark"></i>АДМИНКА</a><span class="sp"></span><a class="hb" href="to37lab.html">Сайт ↗</a><button class="hb hide" id="out">Выйти</button></header>
+<main id="app"></main>
+<div id="st" role="status"></div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s), esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS='to37lab-admin', DATA='to37lab-data.json', PH='content/photos/';
+let cfg=null; try{cfg=JSON.parse(localStorage.getItem(LS)||'null')}catch(e){}
+let tab='photo', list=[], draft=null;
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const tagsOf=s=>[...new Set(String(s||'').split(',').map(t=>t.trim().toLowerCase()).filter(Boolean))];
+const fmt=d=>new Date(d).toLocaleDateString('ru-RU');
+function say(t,k=''){const e=$('#st');e.textContent=t;e.className='on '+k;clearTimeout(say.t);if(k)say.t=setTimeout(()=>e.className='',4000)}
+
+/* ---------- GitHub Contents API ---------- */
+const b64=s=>{const b=new TextEncoder().encode(s);let o='';b.forEach(x=>o+=String.fromCharCode(x));return btoa(o)};
+const unb64=s=>new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g,'')),c=>c.charCodeAt(0)));
+const url=p=>`https://api.github.com/repos/${cfg.repo}/contents/${p.split('/').map(encodeURIComponent).join('/')}`;
+async function gh(p,method='GET',body){
+ const r=await fetch(url(p)+(method==='GET'?'?ref='+encodeURIComponent(cfg.branch):''),{method,headers:{Authorization:'Bearer '+cfg.token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},body:body&&JSON.stringify({...body,branch:cfg.branch})});
+ if(r.status===404&&method==='GET')return null;
+ if(!r.ok){const j=await r.json().catch(()=>({}));const e=new Error(r.status===401?'Токен не подходит или истёк':r.status===403?'У токена нет прав на запись (нужен Contents: Read and write)':r.status===409||r.status===422?'Конфликт версий — повтори':(j.message||'Ошибка GitHub '+r.status));e.status=r.status;throw e}
+ return r.json();
+}
+const base=()=>cfg.dir?cfg.dir.replace(/^\/+|\/+$/g,'')+'/':'';
+async function readData(file=DATA){const f=await gh(base()+file);if(!f)return{sha:null,arr:[]};try{return{sha:f.sha,arr:JSON.parse(unb64(f.content))}}catch(e){throw new Error('Файл данных повреждён, поправь его в репозитории')}}
+async function saveData(mut,msg,file=DATA){ // читаем свежую версию, меняем, пишем; при конфликте — одна повторная попытка
+ for(let n=0;n<2;n++){const {sha,arr}=await readData(file);const out=mut(arr);try{await gh(base()+file,'PUT',{message:msg,content:b64(JSON.stringify(out,null,1)),...(sha?{sha}:{})});return out}catch(e){if(n||(e.status!==409&&e.status!==422))throw e}}
+}
+function shrink(file,max=1800){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),i=new Image();i.onload=()=>{const k=Math.min(1,max/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);ok({d:c.toDataURL('image/jpeg',.86).split(',')[1],w:c.width,h:c.height})};i.onerror=()=>no(new Error('Не удалось прочитать '+file.name));i.src=u})}
+async function upload(file,max){const id=uid(),rel=PH+id+'.jpg',trel=PH+id+'-t.jpg';
+ const big=await shrink(file,max),small=await shrink(file,640);
+ await gh(base()+rel,'PUT',{message:'photo: '+id,content:big.d});await gh(base()+trel,'PUT',{message:'thumb: '+id,content:small.d});
+ return{src:rel,th:trel,w:big.w,h:big.h}}
+
+/* ---------- экраны ---------- */
+function login(err=''){const v=cfg||draft||{};$('#out').classList.add('hide');$('#app').innerHTML=`<h1>Вход</h1><div class="box"><form id="fl">
+ <label>Репозиторий (владелец/имя)<input type="text" name="repo" required placeholder="swartz/to37lab" value="${esc(v.repo)}"></label>
+ <label>Ветка<input type="text" name="branch" required value="${esc(v.branch||'main')}"></label>
+ <label>Папка сайта в репозитории (пусто, если сайт в корне)<input type="text" name="dir" value="${esc(v.dir)}"></label>
+ <label>Токен GitHub<input type="password" name="token" required autocomplete="off" placeholder="github_pat_…"></label>
+ <button class="btn" type="submit"><span>Войти</span><span>↗</span></button></form>
+ ${err?`<p class="note"><b>${esc(err)}</b></p>`:''}
+ <p class="note"><b>Где взять токен:</b> GitHub → Settings → Developer settings → Fine-grained tokens → Generate. Repository access: только твой репозиторий сайта. Permissions → Contents: <b>Read and write</b>. Токен хранится только в этом браузере; кнопка «Выйти» стирает его.</p></div>`}
+function main(){$('#out').classList.remove('hide');$('#app').innerHTML=`<h1>Админка</h1>
+ <div class="tabs"><button class="tab" data-t="photo">Фото</button><button class="tab" data-t="article">Статья</button><button class="tab" data-t="film">Фильм</button><button class="tab" data-t="list">Опубликовано</button></div><div class="box" id="pane"></div>`;pane()}
+function pane(){
+ document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+ const p=$('#pane');
+ if(tab==='photo')p.innerHTML=`<form id="fp"><label>Файлы (можно сразу несколько)<input type="file" name="f" accept="image/*" multiple required></label>
+  <label>Название (пусто — имя файла)<input type="text" name="t"></label><label>Подпись<input type="text" name="d"></label>
+  <label>Автор фото<input type="text" name="a" value="${esc(S.author)}"></label>
+  <label>Теги через запятую<input type="text" name="g" placeholder="улица, плёнка"></label>
+  <label style="display:flex;gap:10px;align-items:center"><input type="checkbox" name="dr"> Черновик (не показывать на сайте)</label>
+  <button class="btn" type="submit"><span>Опубликовать фото</span><span>↗</span></button></form>`;
+ if(tab==='article')p.innerHTML=articleUI();
+ if(tab==='film')return filmPane(p);
+ if(tab==='editphoto')p.innerHTML=photoEditUI(editPhoto);
+ if(tab==='list'){p.innerHTML='<p class="note" style="margin:0">Загружаю…</p>';readData().then(({arr})=>{list=arr.sort((a,b)=>b.date.localeCompare(a.date));
+  p.innerHTML=list.length?list.map(x=>`<div class="item">${x.img?`<img src="${esc(x.th||x.img)}" alt="">`:'<i></i>'}<div><b>${esc(x.title)}</b><span>${x.type==='photo'?'фото':'статья'} · ${fmt(x.date)}${x.draft?' · черновик':''}</span></div><span><button class="btn gh" data-edit="${esc(x.id)}">Править</button> <button class="btn sm" data-del="${esc(x.id)}">Удалить</button></span></div>`).join(''):'<p class="note" style="margin:0">Пока ничего не опубликовано.</p>'}).catch(e=>{p.innerHTML=`<p class="note"><b>${esc(e.message)}</b></p>`})}
+}
+
+/* ---------- действия ---------- */
+document.addEventListener('click',async e=>{
+ const t=e.target.closest('.tab');if(t){tab=t.dataset.t;return pane()}
+ if(e.target.closest('#out')){localStorage.removeItem(LS);cfg=null;return login()}
+ const d=e.target.closest('[data-del]');
+ if(d&&confirm('Удалить с сайта насовсем?')){d.disabled=true;const id=d.dataset.del,item=list.find(x=>x.id===id);
+  try{say('Удаляю…');await saveData(a=>a.filter(x=>x.id!==id),'remove: '+id);
+   for(const fp of fileList(item)){try{const f=await gh(base()+fp);if(f)await gh(base()+fp,'DELETE',{message:'remove file: '+id,sha:f.sha})}catch(_){}}
+   say('Удалено. Сайт обновится через минуту','ok');pane()}catch(err){say(err.message,'err');d.disabled=false}}
+});
+document.addEventListener('submit',async e=>{
+ e.preventDefault();const f=e.target,fd=new FormData(f);
+ if(f.id==='fl'){const c={repo:fd.get('repo').trim(),branch:fd.get('branch').trim(),dir:fd.get('dir').trim(),token:fd.get('token').trim()};
+  const bt=f.querySelector('button');bt.disabled=true;cfg=c;
+  try{const r=await fetch('https://api.github.com/repos/'+c.repo,{headers:{Authorization:'Bearer '+c.token}});
+   if(!r.ok)throw new Error(r.status===404?'Репозиторий не найден или у токена нет к нему доступа':'Токен не подходит ('+r.status+')');
+   await readData();localStorage.setItem(LS,JSON.stringify(c));main()}catch(err){draft=c;cfg=null;login(err.message)}return}
+ const bt=f.querySelector('button');bt.disabled=true;
+ try{
+  if(f.id==='fe'){const id=editPhoto.id;say('Сохраняю…');
+   await saveData(a=>a.map(x=>x.id===id?{...x,title:fd.get('t').trim(),text:fd.get('d').trim(),by:fd.get('a').trim(),tags:tagsOf(fd.get('g')),draft:fd.get('dr')?true:undefined}:x),'edit: '+id);
+   say('Сохранено. Сайт обновится через минуту','ok');tab='list';pane()}
+  if(f.id==='fp'){const files=[...f.f.files],ent=[];S.author=fd.get('a')?.trim()||'';localStorage.setItem('to37-author',S.author);
+   for(let i=0;i<files.length;i++){say(`Загружаю ${i+1} из ${files.length}…`);const up=await upload(files[i]);
+    ent.push({id:uid(),type:'photo',title:fd.get('t')?.trim()||files[i].name.replace(/\.[^.]+$/,''),text:fd.get('d')?.trim()||'',by:fd.get('a')?.trim()||'',tags:tagsOf(fd.get('g')),date:new Date().toISOString(),img:up.src,th:up.th,w:up.w,h:up.h,...(fd.get('dr')?{draft:true}:{})})}
+   say('Обновляю список…');await saveData(a=>[...ent,...a],`photos: +${ent.length}`);say(`Опубликовано: ${ent.length}. Сайт обновится через минуту`,'ok');f.reset()}
+  if(f.id==='fa'){const out=[],tot=blocks.filter(b=>b.file).length;let n=0;
+   for(const b of blocks){
+    if(b.t==='img'){if(!b.src)continue;let src=b.src,th=b.th,w=b.w,h=b.h;if(b.file){say(`Загружаю фото ${++n} из ${tot}…`);const u=await upload(b.file,1600);src=u.src;th=u.th;w=u.w;h=u.h}
+     out.push({t:'img',src,th,w,h,cap:(b.cap||'').trim(),by:(b.by||'').trim(),size:b.size||'wide',al:b.al||'l'})}
+    else if((b.x||'').trim())out.push(b.t==='q'?{t:'q',x:b.x.trim(),by:(b.by||'').trim()}:b.t==='p'?{t:'p',x:b.x.trim(),al:b.al||'l'}:{t:'h',x:b.x.trim()})}
+   if(!out.length)throw new Error('Добавь в статью хотя бы один блок');
+   const first=out.find(b=>b.t==='img'),entry={id:editId||uid(),type:'article',...(S.draft?{draft:true}:{}),title:S.title.trim(),by:S.author.trim(),tags:tagsOf(S.tags),date:editDate||new Date().toISOString(),blocks:out,img:first?first.src:'',th:first?first.th||'':'',text:out.filter(b=>b.t==='p').map(b=>b.x).join('\n\n')};
+   say('Публикую…');await saveData(a=>editId?a.map(x=>x.id===editId?entry:x):[entry,...a],'article: '+entry.title.slice(0,50));
+   say(editId?'Изменения сохранены. Сайт обновится через минуту':'Статья опубликована. Сайт обновится через минуту','ok');localStorage.setItem('to37-author',S.author);resetEditor();pane()}
+ }catch(err){say(err.message||'Не удалось опубликовать','err')}
+ bt.disabled=false;
+});
+
+/* ---------- конструктор статьи ---------- */
+const S={title:'',tags:'',draft:false,author:localStorage.getItem('to37-author')||''};
+const AUTO='to37-autosave';let restored=false;
+const saveAuto=()=>{try{localStorage.setItem(AUTO,JSON.stringify({S,blocks:blocks.filter(b=>!b.file),editId,editDate}))}catch(e){}};
+let blocks=[],editId=null,editDate=null,drag=null,pickList=[],editPhoto=null;
+const LBL={h:'Подзаголовок',p:'Абзац',q:'Цитата',img:'Фото'};
+const fileList=it=>[...new Set([it.img,it.th,...(it.blocks||[]).filter(b=>b.t==='img').flatMap(b=>[b.src,b.th])])].filter(x=>x&&x.startsWith(PH));
+const seg=(i,k,opts,cur)=>`<span class="sgs">${opts.map(([v,l])=>`<button type="button" class="sg ${cur===v?'on':''}" data-i="${i}" data-set="${k}" data-v="${v}">${l}</button>`).join('')}</span>`;
+function blockUI(b,i){let h='';
+ if(b.t==='h')h=`<input type="text" data-i="${i}" data-k="x" value="${esc(b.x)}" placeholder="Текст подзаголовка">`;
+ if(b.t==='p')h=`<textarea data-i="${i}" data-k="x" placeholder="Текст абзаца">${esc(b.x)}</textarea>`+seg(i,'al',[['l','Слева'],['c','По центру'],['r','Справа']],b.al||'l');
+ if(b.t==='q')h=`<textarea data-i="${i}" data-k="x" style="min-height:90px" placeholder="Цитата">${esc(b.x)}</textarea><input type="text" data-i="${i}" data-k="by" value="${esc(b.by)}" placeholder="Кто сказал">`;
+ if(b.t==='img')h=`<img class="pv" src="${esc(b.src)}" alt=""><input type="text" data-i="${i}" data-k="cap" value="${esc(b.cap)}" placeholder="Подпись к фото"><input type="text" data-i="${i}" data-k="by" value="${esc(b.by)}" placeholder="Автор фото">`+seg(i,'size',[['full','Во всю ширину'],['wide','Обычное'],['half','Малое, текст обтекает']],b.size||'wide')+(b.size==='half'?seg(i,'al',[['l','Слева'],['r','Справа']],b.al||'l'):'');
+ return `<div class="blk" data-bi="${i}"><div class="bh"><span class="grip" title="Потяни, чтобы переместить">⠿ ${LBL[b.t]}</span><span><button type="button" data-mv="-1" data-i="${i}" aria-label="Выше">↑</button><button type="button" data-mv="1" data-i="${i}" aria-label="Ниже">↓</button><button type="button" data-rm="${i}" aria-label="Убрать блок">✕</button></span></div>${h}</div>`}
+const blocksHTML=()=>blocks.length?blocks.map(blockUI).join(''):'<p class="note" style="margin:0 0 16px">Статья пока пустая. Добавь блоки кнопками ниже.</p>';
+function articleUI(){return `<form id="fa">${restored?'<p class="note" style="margin:0 0 20px"><b>Восстановлен черновик прошлой сессии.</b> Фото, прикреплённые с компьютера и не опубликованные, нужно добавить заново.</p>':''}${editId?'<p class="note" style="margin:0 0 20px"><b>Редактирование.</b> Сохранение заменит опубликованную версию.</p>':''}
+ <label>Заголовок<input type="text" data-g="title" required value="${esc(S.title)}"></label>
+ <label>Автор (подставляется в подписи фото)<input type="text" data-g="author" value="${esc(S.author)}"></label>
+ <label>Теги через запятую<input type="text" data-g="tags" value="${esc(S.tags)}"></label>
+ <label style="display:flex;gap:10px;align-items:center"><input type="checkbox" data-g="draft" ${S.draft?'checked':''}> Черновик (не показывать на сайте)</label>
+ <div id="bl">${blocksHTML()}</div>
+ <div class="add"><button type="button" class="btn gh" data-add="p">+ Абзац</button><button type="button" class="btn gh" data-add="h">+ Подзаголовок</button><label class="btn gh" style="cursor:pointer">+ Фото<input type="file" id="addimg" accept="image/*" multiple hidden></label><button type="button" class="btn gh" data-add="q">+ Цитата</button><button type="button" class="btn gh" data-gal>+ Из галереи</button></div>
+ <button class="btn" type="submit"><span>${editId?'Сохранить изменения':'Опубликовать статью'}</span><span>↗</span></button>${editId?' <button type="button" class="btn gh" id="cancelEdit">Отменить</button>':''}</form>`}
+const photoEditUI=it=>`<form id="fe"><img class="pv" src="${esc(it.th||it.img)}" alt=""><label>Название<input type="text" name="t" required value="${esc(it.title)}"></label><label>Подпись<input type="text" name="d" value="${esc(it.text)}"></label><label>Автор<input type="text" name="a" value="${esc(it.by)}"></label><label>Теги через запятую<input type="text" name="g" value="${esc((it.tags||[]).join(', '))}"></label><label style="display:flex;gap:10px;align-items:center"><input type="checkbox" name="dr" ${it.draft?'checked':''}> Черновик (не показывать на сайте)</label><button class="btn" type="submit"><span>Сохранить</span><span>↗</span></button> <button type="button" class="btn gh" data-back>Назад</button></form>`;
+const rerender=()=>{const b=$('#bl');if(b)b.innerHTML=blocksHTML();saveAuto()};
+function resetEditor(){blocks=[];editId=editDate=null;S.title='';S.tags='';S.draft=false;restored=false;try{localStorage.removeItem(AUTO)}catch(e){}}
+function legacy(it){const o=[];if(it.img)o.push({t:'img',src:it.img,cap:'',by:'',size:'wide',al:'l'});String(it.text||'').split(/\n{2,}/).filter(Boolean).forEach(x=>o.push(x.startsWith('## ')?{t:'h',x:x.slice(3)}:{t:'p',x,al:'l'}));return o}
+document.addEventListener('input',e=>{const t=e.target;
+ if(t.dataset.g){S[t.dataset.g]=t.type==='checkbox'?t.checked:t.value;saveAuto()}
+ else if(t.dataset.k!==undefined&&blocks[+t.dataset.i])blocks[+t.dataset.i][t.dataset.k]=t.value;saveAuto()});
+document.addEventListener('click',e=>{
+ const T=e.target;let x;
+ if(x=T.closest('[data-add]')){blocks.push({t:x.dataset.add,x:'',al:'l',by:''});return rerender()}
+ if(x=T.closest('[data-mv]')){const i=+x.dataset.i,j=i+ +x.dataset.mv;if(blocks[j]){[blocks[i],blocks[j]]=[blocks[j],blocks[i]];rerender()}return}
+ if(x=T.closest('[data-rm]')){blocks.splice(+x.dataset.rm,1);return rerender()}
+ if(x=T.closest('[data-set]')){blocks[+x.dataset.i][x.dataset.set]=x.dataset.v;return rerender()}
+ if(x=T.closest('[data-edit]')){const it=list.find(v=>v.id===x.dataset.edit);if(!it)return;if(it.type==='photo'){editPhoto=it;tab='editphoto';return pane()}S.title=it.title;S.draft=!!it.draft;S.tags=(it.tags||[]).join(', ');S.author=it.by||S.author;editId=it.id;editDate=it.date;blocks=(it.blocks?JSON.parse(JSON.stringify(it.blocks)):legacy(it));tab='article';return pane()}
+ if(T.closest('#cancelEdit')){resetEditor();pane()}
+ if(T.closest('[data-back]')){tab='list';return pane()}
+ if(T.closest('[data-gal]')){say('Открываю галерею…');readData().then(({arr})=>{pickList=arr.filter(x=>x.type==='photo'&&x.img);say('');
+  const d=document.createElement('div');d.className='pick';d.id='pick';
+  d.innerHTML=`<div class="bh" style="max-width:900px;margin:0 auto"><span class="grip">Выбери фото из галереи</span><button type="button" data-pkx>✕</button></div>`+(pickList.length?`<div class="pg">${pickList.map(x=>`<button type="button" data-pk="${esc(x.id)}" title="${esc(x.title)}"><img src="${esc(x.th||x.img)}" alt=""></button>`).join('')}</div>`:'<p class="note" style="max-width:900px;margin:16px auto">В галерее пока нет фото.</p>');
+  document.body.appendChild(d)}).catch(e=>say(e.message,'err'))}
+ if(T.closest('[data-pkx]'))$('#pick')?.remove();
+ if(x=T.closest('[data-pk]')){const it=pickList.find(v=>v.id===x.dataset.pk);if(it){blocks.push({t:'img',src:it.img,th:it.th,w:it.w,h:it.h,cap:it.title,by:it.by||S.author,size:'wide',al:'l'});rerender()}$('#pick')?.remove()}
+});
+document.addEventListener('change',e=>{if(e.target.id!=='addimg')return;for(const f of e.target.files)blocks.push({t:'img',file:f,src:URL.createObjectURL(f),cap:'',by:S.author,size:'wide',al:'l'});e.target.value='';rerender()});
+/* перетаскивание за «ручку» */
+document.addEventListener('mousedown',e=>{const g=e.target.closest('.grip');if(g)g.closest('.blk').draggable=true});
+document.addEventListener('dragstart',e=>{const b=e.target.closest&&e.target.closest('.blk');if(!b)return;drag=+b.dataset.bi;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','blk')});
+document.addEventListener('dragover',e=>{const b=e.target.closest&&e.target.closest('.blk');if(drag===null||!b)return;e.preventDefault();document.querySelectorAll('.blk.over').forEach(x=>x!==b&&x.classList.remove('over'));b.classList.add('over')});
+document.addEventListener('drop',e=>{const b=e.target.closest&&e.target.closest('.blk');if(drag===null||!b)return;e.preventDefault();const [m]=blocks.splice(drag,1);blocks.splice(+b.dataset.bi,0,m);drag=null;rerender()});
+document.addEventListener('dragend',()=>{drag=null;document.querySelectorAll('.blk').forEach(b=>{b.draggable=false;b.classList.remove('over')})});
+
+
+/* ---------- кино: поиск в TMDB, обзоры, kino-data.json ---------- */
+const KINO='kino-data.json',IMGT='https://image.tmdb.org/t/p/';
+const TM=()=>localStorage.getItem('to37-tmdb')||'';
+const tmd=async(path,par='')=>{const r=await fetch(`https://api.themoviedb.org/3${path}?api_key=${encodeURIComponent(TM())}&language=ru-RU${par}`);if(!r.ok)throw new Error(r.status===401?'TMDB: ключ не подходит':'TMDB: ошибка '+r.status);return r.json()};
+const normF=d=>({tmdb:d.id,title:d.title,orig:d.original_title,year:(d.release_date||'').slice(0,4),runtime:d.runtime||0,genres:(d.genres||[]).map(g=>g.name),director:((d.credits&&d.credits.crew)||[]).filter(c=>c.job==='Director').map(c=>c.name).join(', '),overview:d.overview||'',poster:d.poster_path||'',tmdbRating:+(d.vote_average||0).toFixed(1)});
+let FS=null,found=[],kinoList=[];
+const today=()=>new Date().toISOString().slice(0,10);
+const klHTML=()=>kinoList.length?kinoList.map(x=>`<div class="item">${x.poster?`<img src="${IMGT}w92${x.poster}" alt="">`:'<i></i>'}<div><b>${esc(x.title)}</b><span>${esc(x.year)} · ${x.rating}/5${x.draft?' · черновик':''}</span></div><span><button class="btn gh" data-fedit="${esc(x.id)}">Править</button> <button class="btn sm" data-fdel="${esc(x.id)}">Удалить</button></span></div>`).join(''):'<p class="note" style="margin:0">Обзоров пока нет.</p>';
+const fresHTML=()=>found.length?`<div class="fres">${found.map(m=>`<button type="button" data-fp="${m.id}">${m.poster_path?`<img src="${IMGT}w185${m.poster_path}" alt="">`:'<i></i>'}<span>${esc(m.title)} (${esc((m.release_date||'').slice(0,4))})</span></button>`).join('')}</div>`:'';
+const fselHTML=()=>!FS?'':`<form id="ff"><div class="fsel">${FS.poster?`<img src="${IMGT}w185${FS.poster}" alt="">`:''}<div><b>${esc(FS.title)}</b><span class="note" style="border:0;padding:0;margin:0">${esc(FS.year)}${FS.director?' · реж. '+esc(FS.director):''}${FS.runtime?' · '+FS.runtime+' мин':''}</span></div></div>
+ <label>Оценка (из 5)<select name="r">${[0.5,1,1.5,2,2.5,3,3.5,4,4.5,5].map(v=>`<option value="${v}" ${(+FS.rating||3)===v?'selected':''}>${v}</option>`).join('')}</select></label>
+ <label>Дата просмотра<input type="date" name="w" value="${esc(FS.watched||today())}"></label>
+ <label>Обзор (абзацы — через пустую строку, «## » — подзаголовок)<textarea name="x">${esc(FS.review||'')}</textarea></label>
+ <label style="display:flex;gap:10px;align-items:center"><input type="checkbox" name="dr" ${FS.draft?'checked':''}> Черновик (не показывать на сайте)</label>
+ <button class="btn" type="submit"><span>${FS.id?'Сохранить обзор':'Опубликовать обзор'}</span><span>↗</span></button> <button type="button" class="btn gh" data-fcancel>Отмена</button></form>`;
+function filmPane(p){
+ p.innerHTML=(TM()?`<p class="note" style="margin:0 0 20px">Ключ TMDB сохранён. <button type="button" class="btn gh" data-fkeyclear style="min-height:30px;padding:0 10px">Сменить</button></p>
+  <form id="fs"><label>Найти фильм<input type="text" name="q" required placeholder="Название фильма"></label><button class="btn" type="submit"><span>Искать в TMDB</span><span>↗</span></button></form>
+  <div id="fres" style="margin-top:22px">${fresHTML()}</div><div id="fsel">${fselHTML()}</div>`
+  :`<form id="fk"><label>Ключ TMDB (API Key v3)<input type="text" name="k" required placeholder="32 символа"></label><button class="btn" type="submit"><span>Сохранить ключ</span><span>↗</span></button></form>
+   <p class="note"><b>Где взять:</b> themoviedb.org → регистрация → Settings → API → Create → «API Key (v3 auth)». Это бесплатно. Ключ хранится только в этом браузере.</p>`)
+  +`<h2 style="margin:44px 0 8px;font:900 20px var(--disp);letter-spacing:-.03em;text-transform:uppercase">Мои обзоры</h2><div id="kl"><p class="note" style="margin:0">Загружаю…</p></div>
+  <h2 style="margin:44px 0 8px;font:900 20px var(--disp);letter-spacing:-.03em;text-transform:uppercase">Рулетка на сайте</h2>
+  <button type="button" class="btn gh" data-fcfg ${TM()?'':'disabled'}>Включить случайный выбор из всего кино</button>
+  <p class="note">Без этого «Что посмотреть» выбирает только из твоих обзоров. Кнопка записывает ключ в <b>kino-config.json</b> в репозитории, и он станет публичным (ключ TMDB даёт только чтение, но лучше создать отдельный).</p>`;
+ readData(KINO).then(({arr})=>{kinoList=arr;const k=$('#kl');if(k)k.innerHTML=klHTML()}).catch(e=>{const k=$('#kl');if(k)k.innerHTML=`<p class="note"><b>${esc(e.message)}</b></p>`});
+}
+document.addEventListener('click',async e=>{
+ const T=e.target;let x;
+ if(T.closest('[data-fkeyclear]')){localStorage.removeItem('to37-tmdb');return pane()}
+ if(T.closest('[data-fcancel]')){FS=null;$('#fsel').innerHTML='';return}
+ if(x=T.closest('[data-fp]')){try{say('Загружаю фильм…');const d=await tmd('/movie/'+x.dataset.fp,'&append_to_response=credits');FS={...normF(d),rating:3,watched:today(),review:'',draft:false};say('');$('#fsel').innerHTML=fselHTML();$('#fsel').scrollIntoView({behavior:'smooth'})}catch(err){say(err.message,'err')}return}
+ if(x=T.closest('[data-fedit]')){const it=kinoList.find(v=>v.id===x.dataset.fedit);if(it){FS={...it};$('#fsel').innerHTML=fselHTML();$('#fsel').scrollIntoView({behavior:'smooth'})}return}
+ if(x=T.closest('[data-fdel]')){if(!confirm('Удалить обзор с сайта?'))return;try{say('Удаляю…');kinoList=await saveData(a=>a.filter(v=>v.id!==x.dataset.fdel),'film remove',KINO);$('#kl').innerHTML=klHTML();say('Удалено. Сайт обновится через минуту','ok')}catch(err){say(err.message,'err')}return}
+ if(T.closest('[data-fcfg]')){if(!confirm('Ключ TMDB будет записан в репозиторий и станет публичным. Продолжить?'))return;
+  try{say('Записываю…');const f=await gh(base()+'kino-config.json');await gh(base()+'kino-config.json','PUT',{message:'kino config',content:b64(JSON.stringify({tmdbKey:TM()},null,1)),...(f?{sha:f.sha}:{})});say('Готово: рулетка «из всего кино» включится через минуту','ok')}catch(err){say(err.message,'err')}}
+});
+document.addEventListener('submit',async e=>{
+ const f=e.target;
+ if(f.id==='fk'){e.preventDefault();localStorage.setItem('to37-tmdb',new FormData(f).get('k').trim());pane();return}
+ if(f.id==='fs'){e.preventDefault();try{say('Ищу…');found=(await tmd('/search/movie','&query='+encodeURIComponent(new FormData(f).get('q')))).results.slice(0,8);say(found.length?'':'Ничего не найдено','');$('#fres').innerHTML=fresHTML()}catch(err){say(err.message,'err')}return}
+ if(f.id==='ff'){e.preventDefault();const fd=new FormData(f),bt=f.querySelector('button[type=submit]');bt.disabled=true;
+  try{const entry={...FS,id:'f'+FS.tmdb,rating:+fd.get('r'),watched:fd.get('w'),review:fd.get('x').trim(),date:FS.date||new Date().toISOString()};
+   if(fd.get('dr'))entry.draft=true;else delete entry.draft;
+   say('Публикую…');kinoList=await saveData(a=>[entry,...a.filter(v=>v.id!==entry.id)],'film: '+entry.title.slice(0,50),KINO);
+   say('Обзор сохранён. Сайт обновится через минуту','ok');FS=null;$('#fsel').innerHTML='';$('#kl').innerHTML=klHTML()}catch(err){say(err.message,'err');bt.disabled=false}}
+});
+
+try{const a=JSON.parse(localStorage.getItem(AUTO)||'null');if(a&&a.blocks&&(a.blocks.length||(a.S&&a.S.title))){Object.assign(S,a.S);blocks=a.blocks;editId=a.editId;editDate=a.editDate;restored=true;tab='article'}}catch(e){}
+cfg&&cfg.token?main():login();
+</script>
+</body>
+</html>
