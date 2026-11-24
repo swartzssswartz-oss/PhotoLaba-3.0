@@ -1,0 +1,9 @@
+libraw-wasm 1.6.0 (https://github.com/ybouane/LibRaw-Wasm), основан на LibRaw (https://www.libraw.org, LGPL 2.1 / CDDL 1.0).
+Лицензия пакета: ISC.
+
+ИЗМЕНЕНИЯ В ЭТОЙ КОПИИ (чтобы декодер работал на страницах без заголовков COOP/COEP: GitHub Pages, Safari, Firefox):
+1. libraw.js, worker.js: WebAssembly.Memory с shared:true заменена на shared:false.
+2. libraw.wasm: в импорте памяти сброшен флаг shared (байт флагов 0x03 -> 0x01). Размеры секций не менялись.
+3. libraw.js, worker.js: принудительно выбран штатный запасной путь Emscripten без Atomics.waitAsync
+   (фрагмент '!Atomics.waitAsync||' заменён на '!0||'), так как waitAsync работает только на общей памяти.
+Результат проявки сверён побитно с оригинальной сборкой (Nikon NEF, Fuji RAF; половинное и полное разрешение).

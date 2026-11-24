@@ -1,0 +1,831 @@
+/* ===========================================================================
+   СВЕМА ЛАБ — редактор в языке нового стартового экрана
+   Чёрное поле · бумажные плашки (#E5E3DD) · синие блоки (#0A4AA8) ·
+   жирный гротеск для заголовков · моно для подписей · сетка и тонкие линии.
+   Слой лежит поверх base/layout/components/modules и ничего не меняет в JS:
+   все селекторы ограничены #editorPage, id и классы движка не тронуты.
+   =========================================================================== */
+
+#editorPage {
+  --paper: #e5e3dd;
+  --paper-dim: #cfcdc6;
+  --blue: #0a4aa8;
+  --blue-hi: #1557c8;
+  --ink: #000000;
+  --grid: #1c1c1c;
+  --display: "Arial Black", Impact, "Helvetica Neue", Arial, sans-serif;
+  --mono: Consolas, "SF Mono", "Roboto Mono", "Courier New", monospace;
+
+  /* переопределяем токены — большая часть интерфейса перекрасится сама */
+  --font-body: var(--mono);
+  --font-mono: var(--mono);
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-pill: 0;
+  --accent: var(--blue-hi);
+  --accent-hover: #2a6bea;
+  --accent-press: var(--blue);
+  --line: #2e2e2e;
+  --line-strong: #4a4a4a;
+  --line-bright: #8a8a8a;
+  --text-muted: #9ca1a8;
+  --text-dim: #6e7378;
+  background: #000;
+  color: #fff;
+}
+
+#editorPage ::selection { background: var(--blue); color: #fff; }
+
+/* тонкие скроллбары */
+#editorPage * { scrollbar-width: thin; scrollbar-color: #3a3a3a transparent; }
+#editorPage *::-webkit-scrollbar { width: 6px; height: 6px; }
+#editorPage *::-webkit-scrollbar-thumb { background: #3a3a3a; }
+#editorPage *::-webkit-scrollbar-track { background: transparent; }
+
+/* ============================================================== ШАПКА */
+#editorPage > header {
+  height: 72px;
+  padding: 0 clamp(14px, 2.4vw, 40px);
+  gap: 18px;
+  background: #000;
+  box-shadow: none;
+  border-bottom: 1px solid var(--line);
+}
+
+#editorPage > header .brand {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  column-gap: 14px;
+  row-gap: 4px;
+  align-items: center;
+  margin: 0;
+}
+
+#editorPage > header .brand svg.brand-mark {
+  display: block;   /* base.css прячет .brand .brand-mark — здесь это знак бренда */
+  grid-row: 1 / span 2;
+  width: 36px;
+  height: 30px;
+}
+
+#editorPage > header .brand > span {
+  font: 900 16px/1 var(--display);
+  letter-spacing: 0.08em;
+  color: #fff;
+  text-transform: uppercase;
+  align-self: end;
+}
+
+#editorPage > header .brand .brand-cap {
+  font: 9px/1 var(--mono);
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  align-self: start;
+}
+
+#editorPage .header-index {
+  flex: 0 0 auto;
+  font: 10px var(--mono);
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 6px 0;
+  border-bottom: 1px solid transparent;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+#editorPage .header-index:hover { color: #fff; border-color: var(--blue-hi); }
+
+/* кнопки: плоские, моно, квадратные */
+#editorPage .btn {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #fff;
+  font: 10px var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+}
+#editorPage .btn:hover:not(:disabled) { border-color: #fff; background: #0e0e0e; color: #fff; }
+#editorPage .btn:active:not(:disabled) { background: var(--blue); border-color: var(--blue); }
+#editorPage .btn:disabled { opacity: 0.35; }
+#editorPage .btn:focus-visible { outline: 2px solid var(--blue-hi); outline-offset: 2px; }
+
+/* главное действие — белый блок со стрелкой, как на лендинге */
+#editorPage .btn-primary {
+  min-height: 44px;
+  padding: 0 22px;
+  background: #fff;
+  border-color: #fff;
+  color: #000;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+#editorPage .btn-primary:hover:not(:disabled) { background: var(--blue-hi); border-color: var(--blue-hi); color: #fff; }
+#editorPage .btn-primary:active:not(:disabled) { background: var(--blue); border-color: var(--blue); }
+#editorPage #btnExport::after { content: "↗"; font-size: 14px; line-height: 1; }
+
+#editorPage .header-more-trigger { font-size: 16px !important; letter-spacing: 0; }
+#editorPage .header-more-menu {
+  background: #000;
+  border: 1px solid #fff;
+  box-shadow: 8px 8px 0 var(--blue);
+  top: 78px;
+}
+
+/* ============================================================== ЛЕВАЯ ПАНЕЛЬ */
+#editorPage .sidebar { background: #000; }
+#editorPage .sidebar:hover { background: #000; }
+
+#editorPage .sidebar-left {
+  width: 320px;
+  border-right: 1px solid var(--line);
+}
+
+#editorPage .preset-tools { padding: 0; gap: 0; }
+
+/* паспорт эмульсии — бумажная плашка, как «СВЕМА КОНСТРУКТОР» */
+#editorPage .preset-tools .panel-block--compact {
+  margin: 0;
+  padding: 18px 20px 20px;
+  background: var(--paper);
+  color: #000;
+  border: 0;
+  border-bottom: 1px solid #000;
+  box-shadow: none;
+  animation: none;
+  position: relative;
+}
+#editorPage .preset-tools .panel-block--compact:hover { box-shadow: none; border: 0; border-bottom: 1px solid #000; }
+#editorPage .preset-tools .panel-title--block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  font: 10px var(--mono);
+  letter-spacing: 0.16em;
+  color: #000;
+  font-weight: 400;
+}
+#editorPage .preset-tools .panel-title--block::before {
+  content: "";
+  width: 26px;
+  height: 5px;
+  background: var(--blue);
+  flex: 0 0 auto;
+}
+#editorPage .preset-tools .desc-text {
+  font: 12px/1.5 var(--mono);
+  color: #111;
+  -webkit-line-clamp: 4;
+}
+
+#editorPage #btnSavePreset {
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  background: #0b0b0b;
+}
+#editorPage #btnSavePreset::after { content: "+"; font-size: 16px; color: var(--blue-hi); }
+#editorPage #btnSavePreset:hover:not(:disabled) { background: var(--blue); }
+#editorPage #btnSavePreset:hover::after { color: #fff; }
+
+/* фильтры: сегментный ряд на всю ширину */
+#editorPage .filter-group {
+  padding: 0;
+  border-bottom: 1px solid var(--line);
+  background: #000;
+}
+#editorPage .tab-item {
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-radius: 0 !important;
+  padding: 14px 0;
+  font: 10px var(--mono);
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  background: transparent;
+}
+#editorPage .tab-item:last-child { border-right: 0; }
+#editorPage .tab-item:hover { background: #0e0e0e; color: #fff; }
+#editorPage .tab-item.active {
+  background: #fff;
+  color: #000;
+  font-weight: 700;
+  box-shadow: inset 0 -4px 0 0 var(--blue);
+}
+
+/* список плёнок: нумерованные строки-ячейки */
+#editorPage .presets-list {
+  counter-reset: film;
+  padding: 0;
+  gap: 0;
+  min-height: 84px;
+}
+#editorPage .preset-row {
+  counter-increment: film;
+  position: relative;
+  padding: 14px 18px 14px 58px;
+  gap: 5px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-left: 0;
+  border-radius: 0;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+#editorPage .preset-row::before {
+  content: counter(film, decimal-leading-zero);
+  position: absolute;
+  left: 18px;
+  top: 16px;
+  font: 10px var(--mono);
+  letter-spacing: 0.08em;
+  color: var(--blue-hi);
+}
+#editorPage .preset-row:hover { background: #0f0f0f; border-color: var(--line); }
+#editorPage .preset-row .preset-title {
+  font: 900 14px/1.1 var(--display);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #fff;
+}
+#editorPage .preset-row .preset-gost {
+  font: 10px var(--mono);
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+#editorPage .preset-row .preset-tag {
+  font: 9px var(--mono);
+  letter-spacing: 0.14em;
+  padding: 3px 7px;
+  border: 1px solid var(--line-strong);
+  color: var(--text-muted);
+  border-radius: 0;
+}
+/* активная плёнка — синий блок, как «МОЁ ПОРТФОЛИО» */
+#editorPage .preset-row.active {
+  background: var(--blue);
+  border-bottom-color: var(--blue);
+}
+#editorPage .preset-row.active::before { color: #fff; }
+#editorPage .preset-row.active .preset-title { color: #fff; }
+#editorPage .preset-row.active .preset-gost { color: rgba(255, 255, 255, 0.78); }
+#editorPage .preset-row.active .preset-tag { color: #fff; border-color: rgba(255, 255, 255, 0.7); }
+
+/* ============================================================== СЦЕНА */
+#editorPage .viewport-stage {
+  background-color: #000;
+  background-image:
+    linear-gradient(to right, transparent calc(100% - 1px), var(--grid) calc(100% - 1px)),
+    linear-gradient(to bottom, transparent calc(100% - 1px), var(--grid) calc(100% - 1px));
+  background-size: calc(100% / 8) 100%, 100% calc(100% / 6);
+}
+
+#editorPage .canvas-container { padding: 38px 44px; }
+
+/* кропмарки по углам рабочего поля */
+#editorPage .canvas-container::before,
+#editorPage .canvas-container::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+  z-index: 2;
+  border: 0 solid var(--paper);
+}
+#editorPage .canvas-container::before { left: 16px; top: 16px; border-width: 1px 0 0 1px; }
+#editorPage .canvas-container::after { right: 16px; bottom: 16px; border-width: 0 1px 1px 0; }
+
+/* оверлей загрузки — плашка с лендинга */
+#editorPage .upload-overlay {
+  background: rgba(0, 0, 0, 0.94);
+  gap: 0;
+}
+#editorPage .upload-overlay .upload-btn-primary {
+  min-width: 340px;
+  min-height: 108px;
+  padding: 0 28px;
+  justify-content: space-between;
+  background: #fff;
+  color: #000;
+  border: 0;
+  font: 900 24px/1 var(--display);
+  letter-spacing: 0;
+  text-align: left;
+}
+#editorPage .upload-overlay .upload-btn-primary::after { content: "↗"; font: 400 22px var(--mono); }
+#editorPage .upload-overlay .upload-btn-primary:hover:not(:disabled) { background: var(--blue-hi); color: #fff; }
+#editorPage .upload-caption {
+  margin-top: 14px;
+  font: 10px var(--mono);
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+#editorPage .upload-btn-raw {
+  margin-top: 22px;
+  min-width: 340px;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  background: #0b0b0b;
+}
+#editorPage .upload-btn-raw::after { content: "↗"; color: var(--blue-hi); font-size: 14px; }
+
+/* строка параметров под кадром */
+#editorPage .status-bar {
+  height: 44px;
+  padding: 0;
+  gap: 0;
+  background: #000;
+  border-top: 1px solid var(--line);
+  font: 10px var(--mono);
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+#editorPage .status-bar > div {
+  flex: 1 1 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 18px;
+  border-right: 1px solid var(--line);
+}
+#editorPage .status-bar > div:last-child { border-right: 0; }
+#editorPage .status-bar > div:first-child { flex-grow: 1.7; }
+#editorPage .status-bar > div { white-space: nowrap; overflow: hidden; }
+#editorPage .status-bar > div::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: var(--blue-hi);
+  flex: 0 0 auto;
+}
+#editorPage .hud-value { color: #fff; font-weight: 700; }
+
+/* ============================================================== ПРАВАЯ ПАНЕЛЬ */
+#editorPage .sidebar-right {
+  width: 420px;
+  border-left: 1px solid var(--line);
+  background: #000;
+}
+
+/* рейка разделов: ячейки с номерами */
+#editorPage .rail {
+  background: #000;
+  border-bottom: 1px solid var(--line);
+  counter-reset: rail;
+}
+#editorPage .rail-item {
+  counter-increment: rail;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 12px 12px;
+  border-left: 1px solid var(--line);
+  font: 10px var(--mono);
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  background: transparent;
+  text-align: left;
+}
+#editorPage .rail-item::before {
+  content: counter(rail, decimal-leading-zero);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--blue-hi);
+}
+#editorPage .rail-item:hover { background: #0e0e0e; color: #fff; }
+#editorPage .rail-item.active {
+  background: var(--paper);
+  color: #000;
+  font-weight: 700;
+  box-shadow: inset 0 -4px 0 0 var(--blue);
+}
+#editorPage .rail-item.active::before { color: var(--blue); }
+
+/* крупный заголовок раздела — как плакатный лендинг (только ПК) */
+@media (min-width: 901px) {
+  #editorPage .sidebar-right .mobile-section { counter-reset: pb; }
+  #editorPage .sidebar-right .mobile-section::before {
+    display: block;
+    padding: 30px 20px 18px;
+    font: 900 44px/0.92 var(--display);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: #fff;
+    border-bottom: 1px solid var(--line);
+    background:
+      linear-gradient(var(--blue), var(--blue)) no-repeat 112px 58% / 44% 26%;
+  }
+  #editorPage .mobile-section[data-m-group="response"]::before { content: "ОТКЛИК"; }
+  #editorPage .mobile-section[data-m-group="grain"]::before { content: "ЗЕРНО"; }
+  #editorPage .mobile-section[data-m-group="defects"]::before { content: "ДЕФЕКТЫ"; }
+  #editorPage .mobile-section[data-m-group="style"]::before { content: "СТИЛЬ"; }
+}
+#editorPage .sidebar-right .mobile-section { counter-reset: pb; }
+
+/* блоки модулей */
+#editorPage .sidebar-right .panel-block {
+  counter-increment: pb;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: #000;
+  box-shadow: none;
+}
+#editorPage .sidebar-right .panel-block:hover { border-color: var(--line); box-shadow: none; }
+
+#editorPage .sidebar-right .panel-header {
+  padding: 0 0 0 20px;
+  min-height: 58px;
+  border-bottom: 0;
+  box-shadow: none !important;
+  background: #000;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+#editorPage .sidebar-right .panel-header:hover { background: #0e0e0e; }
+#editorPage .sidebar-right .panel-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font: 900 13px/1.15 var(--display);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: #fff;
+}
+#editorPage .sidebar-right .panel-title::before {
+  content: counter(pb, decimal-leading-zero);
+  flex: 0 0 auto;
+  font: 10px var(--mono);
+  letter-spacing: 0.08em;
+  color: var(--blue-hi);
+}
+#editorPage .panel-title .mnum { display: none; }
+
+/* раскрытый блок — бумажная шапка и синяя метка */
+#editorPage .sidebar-right .panel-block:not(.collapsed) .panel-header {
+  background: var(--paper);
+  box-shadow: none !important;
+}
+#editorPage .sidebar-right .panel-block:not(.collapsed) .panel-title { color: #000; }
+#editorPage .sidebar-right .panel-block:not(.collapsed) .panel-title::before { color: var(--blue); }
+#editorPage .sidebar-right .panel-block:not(.collapsed) .panel-header::after {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 6px;
+  background: var(--blue);
+}
+#editorPage .sidebar-right .panel-header { position: relative; }
+#editorPage .sidebar-right .panel-block:not(.collapsed) .panel-chevron,
+#editorPage .sidebar-right .panel-block:not(.collapsed) .panel-toggle { color: #000; }
+#editorPage .panel-toggle { border: 0; margin: 0; width: 58px; height: 58px; color: var(--text-muted); }
+#editorPage .panel-toggle:hover { border: 0; color: var(--blue-hi); }
+
+#editorPage .sidebar-right .panel-body {
+  padding: 22px 20px 26px;
+  gap: 20px;
+  background: #000;
+}
+
+/* «Сброс» в заголовке панели: моно-метка слева от шеврона */
+#editorPage .panel-reset-btn {
+  order: 2;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  font: 9px var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+#editorPage .panel-toggle { order: 3; }
+#editorPage .panel-reset-btn:hover { background: transparent; color: #fff; border-color: var(--blue-hi); }
+#editorPage .sidebar-right .panel-block:not(.collapsed) .panel-reset-btn { color: rgba(0, 0, 0, 0.6); }
+#editorPage .sidebar-right .panel-block:not(.collapsed) .panel-reset-btn:hover { color: #fff; background: #000; border-color: #000; }
+
+/* свёрнутая панель: мой padding не должен перебивать схлопывание */
+#editorPage .sidebar-right .panel-block.collapsed .panel-body { padding-top: 0; padding-bottom: 0; }
+
+/* ------------------------------------------------ элементы управления */
+#editorPage .control-unit { gap: 4px; }
+#editorPage .control-head {
+  align-items: baseline;
+  gap: 12px;
+  font: 10px/1.35 var(--mono);
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 400;
+}
+#editorPage .control-val {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  margin-right: -6px;
+  border: 1px solid transparent;
+  font: 700 11px var(--mono);
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: transparent;
+}
+#editorPage .control-val:hover { border-color: var(--blue-hi); color: #fff; background: transparent; }
+#editorPage .control-val.editing { background: #fff; color: #000; border-color: #fff; }
+
+/* ползунок: тонкая линия и вертикальная планка — как синий столб на плакате */
+#editorPage input[type="range"] {
+  height: 1px;
+  margin: 15px 0 12px;
+  background: #5a5a5a;
+}
+#editorPage input[type="range"]:hover { background: #8a8a8a; }
+#editorPage input[type="range"]::-webkit-slider-thumb {
+  width: 8px;
+  height: 22px;
+  border-radius: 0;
+  background: var(--paper);
+  border: 0;
+}
+#editorPage input[type="range"]::-moz-range-thumb {
+  width: 8px;
+  height: 22px;
+  border-radius: 0;
+  background: var(--paper);
+  border: 0;
+}
+#editorPage input[type="range"]::-webkit-slider-thumb:hover { background: var(--blue-hi); transform: none; }
+#editorPage input[type="range"]::-moz-range-thumb:hover { background: var(--blue-hi); transform: none; }
+#editorPage input[type="range"]:active::-webkit-slider-thumb { background: var(--blue-hi); }
+#editorPage input[type="range"]:active::-moz-range-thumb { background: var(--blue-hi); }
+#editorPage input[type="range"]:focus-visible { outline: 1px solid var(--blue-hi); outline-offset: 10px; }
+
+/* поля и выпадающие списки */
+#editorPage select.select-input,
+#editorPage input.select-input {
+  min-height: 42px;
+  padding: 0 12px;
+  background: #0b0b0b;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+  color: #fff;
+  font: 11px var(--mono);
+  letter-spacing: 0.04em;
+}
+#editorPage select.select-input:hover,
+#editorPage input.select-input:hover { border-color: #fff; }
+#editorPage select.select-input:focus,
+#editorPage input.select-input:focus { border-color: var(--blue-hi); outline: none; box-shadow: inset 0 -3px 0 var(--blue-hi); }
+
+/* чекбоксы — квадрат с синей заливкой */
+#editorPage .checkbox-label {
+  gap: 12px;
+  font: 10px/1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+}
+#editorPage .checkbox-label input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--line-bright);
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  accent-color: var(--blue);
+}
+#editorPage .checkbox-label input[type="checkbox"]:checked {
+  background: var(--blue);
+  border-color: var(--blue-hi);
+  box-shadow: inset 0 0 0 4px #000;
+}
+#editorPage .checkbox-label input[type="checkbox"]:checked { box-shadow: inset 0 0 0 4px #000, inset 0 0 0 20px var(--blue-hi); }
+
+/* пояснения */
+#editorPage .module-note {
+  padding-left: 12px;
+  border-left: 2px solid var(--blue);
+  font: 10.5px/1.55 var(--mono);
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+
+/* кривая */
+#editorPage .curve-box {
+  background: #000;
+  border: 1px solid var(--line-strong);
+  border-radius: 0;
+}
+#editorPage .curve-box:hover { border-color: #fff; }
+#editorPage .curve-handle { fill: var(--blue-hi); stroke: #fff; rx: 0; ry: 0; }
+
+/* каналы */
+#editorPage .channel-col-label {
+  font: 700 10px var(--mono);
+  letter-spacing: 0.2em;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line-strong);
+  margin-bottom: 6px;
+}
+#editorPage .channel-grid { gap: 14px; }
+
+/* маски */
+#editorPage .mask-block { border-top: 1px solid var(--line); }
+#editorPage .mask-custom { border-left: 2px solid var(--blue); }
+
+/* ============================================================== ПРОЧЕЕ */
+#editorPage .toast-container .toast,
+.toast-container .toast {
+  border-radius: 0;
+  font-family: Consolas, "Courier New", monospace;
+  letter-spacing: 0.06em;
+}
+
+#editorPage .save-preset-card {
+  border: 1px solid #fff;
+  border-radius: 0;
+  background: #000;
+  box-shadow: 12px 12px 0 var(--blue);
+}
+#editorPage .save-preset-title {
+  font: 900 20px/1.1 var(--display);
+  text-transform: uppercase;
+}
+#editorPage .save-preset-hint { font: 11px/1.5 var(--mono); color: var(--text-muted); }
+
+/* ============================================================== ПЛАНШЕТ */
+@media (min-width: 901px) and (max-width: 1180px) {
+  #editorPage .sidebar-left { width: 270px; }
+  #editorPage .sidebar-right { width: 350px; }
+  #editorPage .sidebar-right .mobile-section::before { font-size: 34px; background-position: 90px 58%; }
+  #editorPage .preset-row { padding-left: 50px; }
+  #editorPage .preset-row::before { left: 14px; }
+}
+
+/* ============================================================== ТЕЛЕФОН */
+@media (max-width: 900px) {
+  #editorPage .sidebar-right::before { display: none !important; }
+  #editorPage > header {
+    height: 58px;
+    gap: 8px;
+    padding: 0 12px;
+  }
+  #editorPage > header .brand > span,
+  #editorPage > header .brand .brand-cap,
+  #editorPage .header-index { display: none; }
+  #editorPage > header .brand svg.brand-mark { grid-row: auto; width: 30px; height: 25px; }
+  #editorPage .btn { min-height: 38px; padding: 0 10px; letter-spacing: 0.1em; }
+  #editorPage .btn-primary { min-height: 40px; padding: 0 14px; gap: 8px; }
+
+  #editorPage .canvas-container { padding: 24px 22px; }
+  #editorPage .canvas-container::before { left: 8px; top: 8px; }
+  #editorPage .canvas-container::after { right: 8px; bottom: 8px; }
+
+  #editorPage .upload-overlay .upload-btn-primary { min-width: 0; width: calc(100% - 40px); min-height: 84px; font-size: 19px; }
+  #editorPage .upload-btn-raw { min-width: 0; width: calc(100% - 40px); }
+
+  #editorPage > header .brand { flex: 0 0 auto; min-width: 30px; }
+  #editorPage .status-bar { height: 36px; overflow-x: auto; scrollbar-width: none; }
+  #editorPage .status-bar::-webkit-scrollbar { display: none; }
+  #editorPage .status-bar > div { flex: 0 0 auto; padding: 0 12px; gap: 6px; letter-spacing: 0.06em; white-space: nowrap; overflow: visible; }
+  #editorPage .status-bar > div::before { width: 5px; height: 5px; }
+
+  #editorPage .sidebar-left,
+  #editorPage .sidebar-right { width: 100%; border: 0; }
+  #editorPage .sidebar-right .panel-header { min-height: 54px; }
+  #editorPage .panel-toggle { height: 54px; width: 54px; }
+  #editorPage .sidebar-right .panel-body { padding: 18px 16px 22px; }
+  #editorPage .preset-row { padding: 12px 14px 12px 52px; }
+  #editorPage .preset-row::before { left: 14px; top: 14px; }
+
+  /* нижняя навигация — ячейки с бумажным активным состоянием */
+  #editorPage .mobile-nav-tabs,
+  .mobile-nav-tabs {
+    background: #000;
+    border-top: 1px solid var(--line);
+    gap: 0;
+  }
+  .mobile-nav-tabs .m-tab {
+    border: 0;
+    border-left: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+    font: 9px var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 14px 2px;
+  }
+  .mobile-nav-tabs .m-tab:first-child { border-left: 0; }
+  .mobile-nav-tabs .m-tab.active {
+    background: var(--paper);
+    color: #000;
+    font-weight: 700;
+    box-shadow: inset 0 4px 0 0 var(--blue);
+  }
+  .mobile-nav-tabs .m-tab.active::before { display: none; }
+}
+
+/* узкие телефоны: «Назад / Отмена / Повтор» остаются знаками (font-size:0 из base.css
+   перебит моим .btn, поэтому повторяем его с большей специфичностью) */
+@media (max-width: 400px) {
+  #editorPage #btnBackToHome,
+  #editorPage #btnUndo,
+  #editorPage #btnRedo {
+    font-size: 0;
+    letter-spacing: 0;
+    padding: 0 11px;
+    min-width: 38px;
+  }
+  #editorPage > header .brand { display: none; }
+  #editorPage #btnBackToHome::before,
+  #editorPage #btnUndo::before,
+  #editorPage #btnRedo::before { font-size: 15px; font-family: var(--mono); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #editorPage *, #editorPage *::before, #editorPage *::after { transition: none !important; animation: none !important; }
+  /* на телефоне панели стартуют с opacity:0 и проявляются анимацией — без неё показываем сразу */
+  #editorPage .panel-block, #editorPage .preset-row { opacity: 1 !important; transform: none !important; }
+}
+
+/* На ПК пресеты живут в левой панели — вкладка «Пресеты» в правой рейке только путала */
+#editorPage .rail-item[data-tab="presets"] { display: none; }
+#editorPage #btnResetQuick:hover:not(:disabled) { border-color: var(--blue-hi); }
+
+/* ============================================================== ГИСТОГРАММА */
+#editorPage .hist {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  z-index: 3;
+  width: min(264px, calc(100% - 36px));
+  background: #000;
+  border: 1px solid var(--line-bright);
+  box-shadow: 8px 8px 0 var(--blue);
+}
+#editorPage .hist[hidden] { display: none; }
+#editorPage .hist-hd, #editorPage .hist-ft {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  font: 9px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted);
+}
+#editorPage .hist-hd { padding: 0 0 0 10px; border-bottom: 1px solid var(--line); }
+#editorPage .hist-modes { display: flex; }
+#editorPage .hist-modes button {
+  height: 30px; padding: 0 9px; border: 0; border-left: 1px solid var(--line); border-radius: 0;
+  background: transparent; color: var(--text-muted); font: 9px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+}
+#editorPage .hist-modes button:hover { color: #fff; }
+#editorPage .hist-modes button.on { background: var(--paper); color: #000; font-weight: 700; }
+#editorPage .hist canvas { display: block; width: 100%; height: auto; aspect-ratio: 480 / 220; }
+#editorPage .hist-ft { padding: 7px 10px; border-top: 1px solid var(--line); }
+#editorPage .hist-ft .warn { color: #fff; font-weight: 700; }
+#editorPage .hist-ft [data-s=sh].warn { color: var(--blue-hi); }
+#editorPage .hist-toggle {
+  position: absolute; left: 16px; bottom: 16px; z-index: 3; height: 30px; padding: 0 12px;
+  border: 1px solid var(--line-strong); border-radius: 0; background: #000; color: var(--text-muted);
+  font: 9px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer;
+}
+#editorPage .hist-toggle:hover { color: #fff; border-color: #fff; }
+#editorPage .hist-toggle.on { background: var(--paper); color: #000; border-color: var(--paper); font-weight: 700; }
+@media (max-width: 900px) {
+  #editorPage .hist { top: 8px; right: 8px; width: 200px; box-shadow: 5px 5px 0 var(--blue); }
+  #editorPage .hist-toggle { left: 8px; bottom: 8px; }
+}
+
+/* ============================================================== ДИАЛОГ ЭКСПОРТА */
+#editorPage .export-dialog { width: min(440px, calc(100vw - 32px)); max-height: calc(100vh - 32px); overflow: auto; }
+#editorPage .exp-seg { display: flex; }
+#editorPage .exp-opt {
+  flex: 1; padding: 13px 8px; margin-right: -1px; border: 1px solid var(--line-strong); border-radius: 0;
+  background: transparent; color: var(--text-muted); font: 11px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer;
+}
+#editorPage .exp-opt:hover { color: #fff; border-color: #fff; position: relative; }
+#editorPage .exp-opt.on { background: #fff; color: #000; border-color: #fff; font-weight: 700; position: relative; box-shadow: inset 0 -3px 0 var(--blue); }
+#editorPage #expHint { margin: 10px 0 0; min-height: 3em; }
+#editorPage .export-dialog .control-unit { margin-bottom: 14px; }
+#editorPage .export-dialog [hidden] { display: none !important; }
+
+#editorPage #rawPanel[hidden] { display: none !important; }
